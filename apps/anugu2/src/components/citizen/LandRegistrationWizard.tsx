@@ -172,10 +172,18 @@ export const LandRegistrationWizard: React.FC = () => {
       }
       for (const file of uploadedFiles) {
         if (uploadedFilesDone.has(file)) continue;
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('documentType', 'TITLE_INSTRUMENT');
-        await apiRequest(`/documents/${applicationId}/upload`, { method: 'POST', body: formData });
+        if (!applicationId.startsWith('local-')) {
+          try {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('documentType', 'TITLE_INSTRUMENT');
+            await apiRequest(`/documents/${applicationId}/upload`, { method: 'POST', body: formData });
+          } catch (uploadErr) {
+            if (!(uploadErr instanceof Error && uploadErr.message === 'Backend service unavailable')) {
+              throw uploadErr;
+            }
+          }
+        }
         setUploadedFilesDone(previous => new Set(previous).add(file));
       }
       navigate('/portal/applications');

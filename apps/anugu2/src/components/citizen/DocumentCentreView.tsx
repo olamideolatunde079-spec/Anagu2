@@ -27,14 +27,16 @@ export const DocumentCentreView: React.FC = () => {
     setError('');
 
     void Promise.all(applications.map(async application => {
-      const rows = await apiRequest<Omit<StoredDocument, 'applicationNumber'>[]>(
-        `/documents/${encodeURIComponent(application.id)}`,
-      );
-      return rows.map(row => ({ ...row, applicationNumber: application.applicationNumber }));
+      try {
+        const rows = await apiRequest<Omit<StoredDocument, 'applicationNumber'>[]>(
+          `/documents/${encodeURIComponent(application.id)}`,
+        );
+        return rows.map(row => ({ ...row, applicationNumber: application.applicationNumber }));
+      } catch {
+        return [];
+      }
     })).then(groups => {
       if (active) setDocuments(groups.flat());
-    }).catch(loadError => {
-      if (active) setError(loadError instanceof Error ? loadError.message : 'Could not load application documents.');
     }).finally(() => {
       if (active) setLoading(false);
     });

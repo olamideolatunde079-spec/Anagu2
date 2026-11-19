@@ -77,14 +77,6 @@ export async function connectWallet(): Promise<WalletState> {
   const wallet = detectWallet();
   
   if (!wallet) {
-    // Mobile: try to open MetaMask deep link
-    const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-    if (isMobile) {
-      const deepLink = `https://metamask.app.link/dapp/${window.location.host}`;
-      window.open(deepLink, '_blank');
-    } else {
-      window.open('https://metamask.io/download/', '_blank');
-    }
     throw new Error('No Web3 wallet detected. Install MetaMask or use a Web3-enabled browser.');
   }
 
@@ -171,9 +163,8 @@ export async function initiateLandPurchase(
     //   To: seller address
     //   Value: price in ETH
     //   Data: encoded parcel title for reference
-    const dataHex = '0x' + Buffer.from(
-      `ANAGU:BUY:${params.tokenId}:${params.parcelTitle}`, 'utf8'
-    ).toString('hex');
+    const bytes = new TextEncoder().encode(`ANAGU:BUY:${params.tokenId}:${params.parcelTitle}`);
+    const dataHex = '0x' + Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
 
     const tx = await signer.sendTransaction({
       to:    params.sellerAddress,

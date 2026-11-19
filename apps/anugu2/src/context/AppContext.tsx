@@ -157,6 +157,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         REGISTRAR: 'registrar',
         LAND_ADMINISTRATOR: 'admin',
         GOVERNOR: 'governor',
+        SYSADMIN: 'sysadmin',
+        SYSTEM: 'sysadmin',
       };
       const role = roleMap[String(user.role ?? '').toUpperCase()] ?? 'citizen';
       setCurrentRole(role);
