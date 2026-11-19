@@ -4,9 +4,9 @@
   "description": "Anagu Land Administration Framework — monorepo root",
   "private": true,
   "workspaces": [
+    "apps/anugu2",
     "apps/backend",
     "apps/web",
-    "apps/mobile",
     "contracts"
   ],
   "dependencies": {
@@ -14,6 +14,7 @@
     "react-dom": "18.2.0"
   },
   "scripts": {
+    "dev":           "node ./scripts/start-web.cjs",
     "install:all":   "npm install --workspaces --if-present",
     "backend":       "npm run start:dev --workspace=apps/backend",
     "web":           "node ./scripts/start-web.cjs",
@@ -25,7 +26,7 @@
     "test:contracts":"npm run test --workspace=contracts",
     "deploy:local":  "npm run deploy:local --workspace=contracts",
     "seed:local":    "npm run seed:local --workspace=contracts",
-    "lint":          "npm run lint --workspace=apps/backend",
+    "lint":          "npm --prefix apps/anugu2 run lint",
     "lint:ui":       "npm --prefix apps/anugu2 run lint",
     "ev":            "npm run test --workspace=apps/backend -- --testPathPattern=evaluation --verbose --runInBand",
     "component4":    "npm run test --workspace=apps/backend -- --testPathPattern=evaluation --verbose --runInBand",

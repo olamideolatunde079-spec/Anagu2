@@ -41,7 +41,8 @@
     "typeorm": "0.3.20",
     "uuid": "9.0.1",
     "@supabase/supabase-js": "2.43.4",
-    "jwks-rsa": "3.1.0"
+    "jwks-rsa": "3.1.0",
+    "dotenv": "16.4.5"
   },
   "devDependencies": {
     "@nestjs/cli": "10.3.2",
@@ -66,7 +67,8 @@
     "typeorm-ts-node-commonjs": "0.3.20",
     "typescript": "5.4.5",
     "@types/supertest": "6.0.2",
-    "supertest": "7.0.0"
+    "supertest": "7.0.0",
+    "@types/dotenv": "*"
   },
   "jest": {
     "moduleFileExtensions": [
