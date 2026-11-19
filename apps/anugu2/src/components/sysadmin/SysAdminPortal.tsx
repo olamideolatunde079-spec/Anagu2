@@ -40,52 +40,52 @@ export const SysAdminPortal: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto px-4 sm:px-6 py-6 text-[#252B28]">
       <div className="flex items-center justify-between">
         <BackButton to="/portal/dashboard" label="Back to Dashboard" />
       </div>
 
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-          <Terminal className="w-6 h-6 text-[#6338F5]" />
-          System Administration & Audit Console
+      <div className="pb-4 border-b border-[#E5E8E5]">
+        <h1 className="text-2xl font-bold text-[#252B28] flex items-center gap-2">
+          <Terminal className="w-6 h-6 text-[#245C43]" />
+          System Administration &amp; Audit Console
         </h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+        <p className="text-xs text-[#4A524D] mt-1">
           Identity management, role-based access control (RBAC), consensus nodes, and tamper-evident cryptographic audit trails.
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-2 p-1 bg-white dark:bg-[#171A3B] rounded-xl border border-slate-200 dark:border-slate-800 self-start overflow-x-auto max-w-full">
+      <div className="flex items-center gap-1.5 p-1 bg-white rounded-lg border border-[#CBD0C8] self-start overflow-x-auto max-w-full">
         <button
           onClick={() => setActiveTab('audit')}
-          className={`px-3 sm:px-4 py-2 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${
-            activeTab === 'audit' ? 'bg-[#6338F5] text-white shadow' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+          className={`px-3 sm:px-4 py-2 rounded-md text-xs font-semibold transition-colors whitespace-nowrap ${
+            activeTab === 'audit' ? 'bg-[#245C43] text-white shadow-xs' : 'text-[#4A524D] hover:text-[#252B28]'
           }`}
         >
           Immutable Audit Trail
         </button>
         <button
           onClick={() => setActiveTab('users')}
-          className={`px-3 sm:px-4 py-2 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${
-            activeTab === 'users' ? 'bg-[#6338F5] text-white shadow' : 'text-slate-400 hover:text-white'
+          className={`px-3 sm:px-4 py-2 rounded-md text-xs font-semibold transition-colors whitespace-nowrap ${
+            activeTab === 'users' ? 'bg-[#245C43] text-white shadow-xs' : 'text-[#4A524D] hover:text-[#252B28]'
           }`}
         >
-          User Directory & KYC
+          User Directory &amp; KYC
         </button>
         <button
           onClick={() => setActiveTab('matrix')}
-          className={`px-3 sm:px-4 py-2 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${
-            activeTab === 'matrix' ? 'bg-[#6338F5] text-white shadow' : 'text-slate-400 hover:text-white'
+          className={`px-3 sm:px-4 py-2 rounded-md text-xs font-semibold transition-colors whitespace-nowrap ${
+            activeTab === 'matrix' ? 'bg-[#245C43] text-white shadow-xs' : 'text-[#4A524D] hover:text-[#252B28]'
           }`}
         >
           Permissions Matrix
         </button>
         <button
           onClick={() => setActiveTab('nodes')}
-          className={`px-3 sm:px-4 py-2 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${
-            activeTab === 'nodes' ? 'bg-[#6338F5] text-white shadow' : 'text-slate-400 hover:text-white'
+          className={`px-3 sm:px-4 py-2 rounded-md text-xs font-semibold transition-colors whitespace-nowrap ${
+            activeTab === 'nodes' ? 'bg-[#245C43] text-white shadow-xs' : 'text-[#4A524D] hover:text-[#252B28]'
           }`}
         >
           Consensus Nodes
@@ -94,37 +94,37 @@ export const SysAdminPortal: React.FC = () => {
 
       {/* TAB 1: AUDIT TRAIL */}
       {activeTab === 'audit' && (
-        <div className="bg-[#171A3B] rounded-2xl border border-indigo-500/25 p-5 shadow-2xl space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-700/60">
-            <h2 className="text-sm font-bold text-white flex items-center gap-2">
-              <Receipt className="w-4 h-4 text-emerald-400" />
+        <div className="bg-white rounded-xl border border-[#E5E8E5] shadow-xs p-6 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-[#E5E8E5]">
+            <h2 className="text-sm font-bold text-[#252B28] flex items-center gap-2">
+              <Receipt className="w-4 h-4 text-[#245C43]" />
               Cryptographic Audit Log
             </h2>
-            <span className="text-[10px] font-mono text-emerald-400">SHA-256 Chained Hashes</span>
+            <span className="text-xs font-mono text-[#245C43] font-semibold">SHA-256 Chained Hashes</span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs font-mono">
-              <thead className="text-[11px] uppercase text-slate-400 border-b border-slate-800">
+              <thead className="text-xs uppercase text-[#252B28] font-semibold border-b border-[#E5E8E5] bg-[#F7F8F7]">
                 <tr>
                   <th className="py-2.5 px-3">Timestamp</th>
-                  <th className="py-2.5 px-3">Actor & Role</th>
+                  <th className="py-2.5 px-3">Actor &amp; Role</th>
                   <th className="py-2.5 px-3">Action</th>
                   <th className="py-2.5 px-3">Details</th>
                   <th className="py-2.5 px-3">Log Hash</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-[#E5E8E5]">
                 {auditLogs.map(log => (
-                  <tr key={log.id} className="hover:bg-[#0d122e] transition-colors">
-                    <td className="py-2.5 px-3 text-slate-400">{log.timestamp}</td>
+                  <tr key={log.id} className="hover:bg-[#F7F8F7] transition-colors">
+                    <td className="py-2.5 px-3 text-[#4A524D]">{log.timestamp}</td>
                     <td className="py-2.5 px-3">
-                      <div className="text-white font-sans font-medium">{log.actor}</div>
-                      <div className="text-[10px] text-indigo-400 capitalize">{log.actorRole}</div>
+                      <div className="text-[#252B28] font-sans font-medium">{log.actor}</div>
+                      <div className="text-xs text-[#245C43] capitalize font-semibold">{log.actorRole}</div>
                     </td>
-                    <td className="py-2.5 px-3 text-amber-300 font-bold">{log.action}</td>
-                    <td className="py-2.5 px-3 text-slate-300 font-sans max-w-xs">{log.details}</td>
-                    <td className="py-2.5 px-3 text-emerald-400 truncate max-w-[120px]">{log.hash}</td>
+                    <td className="py-2.5 px-3 text-[#252B28] font-bold">{log.action}</td>
+                    <td className="py-2.5 px-3 text-[#4A524D] font-sans max-w-xs">{log.details}</td>
+                    <td className="py-2.5 px-3 text-[#245C43] truncate max-w-[120px] font-semibold">{log.hash}</td>
                   </tr>
                 ))}
               </tbody>
@@ -135,15 +135,15 @@ export const SysAdminPortal: React.FC = () => {
 
       {/* TAB 2: USERS */}
       {activeTab === 'users' && (
-        <div className="bg-[#171A3B] rounded-2xl border border-indigo-500/25 p-5 shadow-2xl space-y-4">
-          <h2 className="text-sm font-bold text-white flex items-center gap-2 pb-3 border-b border-slate-700/60">
-            <Users className="w-4 h-4 text-indigo-400" />
+        <div className="bg-white rounded-xl border border-[#E5E8E5] shadow-xs p-6 space-y-4">
+          <h2 className="text-sm font-bold text-[#252B28] flex items-center gap-2 pb-3 border-b border-[#E5E8E5]">
+            <Users className="w-4 h-4 text-[#245C43]" />
             Verified Persona Directory
           </h2>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="text-[11px] font-mono uppercase text-slate-400 border-b border-slate-800">
+              <thead className="text-xs font-semibold uppercase text-[#252B28] border-b border-[#E5E8E5] bg-[#F7F8F7]">
                 <tr>
                   <th className="py-2.5 px-3">Full Legal Name</th>
                   <th className="py-2.5 px-3">System Role</th>
@@ -152,15 +152,15 @@ export const SysAdminPortal: React.FC = () => {
                   <th className="py-2.5 px-3">Verification</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-[#E5E8E5]">
                 {mockUsers.map((u, i) => (
-                  <tr key={i} className="hover:bg-[#0d122e] transition-colors">
-                    <td className="py-2.5 px-3 font-semibold text-white">{u.name}</td>
-                    <td className="py-2.5 px-3 text-indigo-300">{u.role}</td>
-                    <td className="py-2.5 px-3 font-mono text-slate-300">{u.nin}</td>
-                    <td className="py-2.5 px-3 font-mono text-slate-400">{u.wallet}</td>
+                  <tr key={i} className="hover:bg-[#F7F8F7] transition-colors">
+                    <td className="py-2.5 px-3 font-semibold text-[#252B28]">{u.name}</td>
+                    <td className="py-2.5 px-3 text-[#245C43] font-medium">{u.role}</td>
+                    <td className="py-2.5 px-3 font-mono text-[#4A524D]">{u.nin}</td>
+                    <td className="py-2.5 px-3 font-mono text-[#4A524D]">{u.wallet}</td>
                     <td className="py-2.5 px-3">
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-medium">
+                      <span className="text-xs px-2 py-0.5 rounded bg-[#245C43]/10 text-[#245C43] font-semibold">
                         {u.status}
                       </span>
                     </td>
@@ -174,15 +174,15 @@ export const SysAdminPortal: React.FC = () => {
 
       {/* TAB 3: MATRIX */}
       {activeTab === 'matrix' && (
-        <div className="bg-[#171A3B] rounded-2xl border border-indigo-500/25 p-5 shadow-2xl space-y-4">
-          <h2 className="text-sm font-bold text-white flex items-center gap-2 pb-3 border-b border-slate-700/60">
-            <Lock className="w-4 h-4 text-amber-400" />
-            Statutory Roles & Access Control Matrix (RBAC)
+        <div className="bg-white rounded-xl border border-[#E5E8E5] shadow-xs p-6 space-y-4">
+          <h2 className="text-sm font-bold text-[#252B28] flex items-center gap-2 pb-3 border-b border-[#E5E8E5]">
+            <Lock className="w-4 h-4 text-[#245C43]" />
+            Statutory Roles &amp; Access Control Matrix (RBAC)
           </h2>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs font-mono">
-              <thead className="text-[11px] uppercase text-slate-400 border-b border-slate-800">
+              <thead className="text-xs uppercase text-[#252B28] font-semibold border-b border-[#E5E8E5] bg-[#F7F8F7]">
                 <tr>
                   <th className="py-3 px-3">Protocol Action</th>
                   <th className="py-3 px-3 text-center">Citizen</th>
@@ -192,15 +192,15 @@ export const SysAdminPortal: React.FC = () => {
                   <th className="py-3 px-3 text-center">Governor</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-[#E5E8E5]">
                 {permissionMatrix.map((item, idx) => (
-                  <tr key={idx} className="hover:bg-[#0d122e]">
-                    <td className="py-3 px-3 text-white font-sans font-semibold">{item.action}</td>
-                    <td className="py-3 px-3 text-center">{item.citizen ? '✓ Allowed' : '— Blocked'}</td>
-                    <td className="py-3 px-3 text-center">{item.surveyor ? '✓ Allowed' : '— Blocked'}</td>
-                    <td className="py-3 px-3 text-center">{item.registrar ? '✓ Allowed' : '— Blocked'}</td>
-                    <td className="py-3 px-3 text-center">{item.admin ? '✓ Allowed' : '— Blocked'}</td>
-                    <td className="py-3 px-3 text-center text-amber-400">{item.governor ? '✓ Assent Only' : '— Blocked'}</td>
+                  <tr key={idx} className="hover:bg-[#F7F8F7]">
+                    <td className="py-3 px-3 text-[#252B28] font-sans font-semibold">{item.action}</td>
+                    <td className="py-3 px-3 text-center text-[#245C43] font-semibold">{item.citizen ? '✓ Allowed' : '— Blocked'}</td>
+                    <td className="py-3 px-3 text-center text-[#245C43] font-semibold">{item.surveyor ? '✓ Allowed' : '— Blocked'}</td>
+                    <td className="py-3 px-3 text-center text-[#245C43] font-semibold">{item.registrar ? '✓ Allowed' : '— Blocked'}</td>
+                    <td className="py-3 px-3 text-center text-[#245C43] font-semibold">{item.admin ? '✓ Allowed' : '— Blocked'}</td>
+                    <td className="py-3 px-3 text-center text-amber-800 font-semibold">{item.governor ? '✓ Assent Only' : '— Blocked'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -211,33 +211,33 @@ export const SysAdminPortal: React.FC = () => {
 
       {/* TAB 4: CONSENSUS NODES */}
       {activeTab === 'nodes' && (
-        <div className="bg-[#171A3B] rounded-2xl border border-indigo-500/25 p-5 shadow-2xl space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-700/60">
-            <h2 className="text-sm font-bold text-white flex items-center gap-2">
-              <Cpu className="w-4 h-4 text-[#168BFF]" />
+        <div className="bg-white rounded-xl border border-[#E5E8E5] shadow-xs p-6 space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#E5E8E5]">
+            <h2 className="text-sm font-bold text-[#252B28] flex items-center gap-2">
+              <Cpu className="w-4 h-4 text-[#245C43]" />
               Raft-BFT Sovereign Validator Quorum (Block #{blocks[0]?.blockNumber})
             </h2>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">
+            <span className="text-xs font-mono px-2 py-0.5 rounded bg-[#245C43]/10 text-[#245C43] font-semibold">
               4 / 4 VALIDATORS IN QUORUM
             </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {consensusNodes.map(node => (
-              <div key={node.id} className="p-4 rounded-xl bg-[#0d122e] border border-slate-800 space-y-2 text-xs">
+              <div key={node.id} className="p-4 rounded-lg bg-[#F7F8F7] border border-[#E5E8E5] space-y-2 text-xs">
                 <div className="flex items-center justify-between">
-                  <span className="font-mono font-bold text-white flex items-center gap-1.5">
-                    <Server className="w-3.5 h-3.5 text-indigo-400" />
+                  <span className="font-mono font-bold text-[#252B28] flex items-center gap-1.5">
+                    <Server className="w-3.5 h-3.5 text-[#245C43]" />
                     {node.id}
                   </span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300">
+                  <span className="text-xs font-mono px-2 py-0.5 rounded bg-[#245C43]/10 text-[#245C43] font-semibold">
                     {node.status}
                   </span>
                 </div>
-                <div className="font-semibold text-slate-200">{node.agency}</div>
-                <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 pt-1 border-t border-slate-800">
+                <div className="font-semibold text-[#252B28]">{node.agency}</div>
+                <div className="flex items-center justify-between text-xs font-mono text-[#4A524D] pt-1 border-t border-[#E5E8E5]">
                   <span>{node.role}</span>
-                  <span className="text-indigo-300">{node.latency} · {node.uptime}</span>
+                  <span className="text-[#245C43] font-medium">{node.latency} · {node.uptime}</span>
                 </div>
               </div>
             ))}

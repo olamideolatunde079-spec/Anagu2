@@ -1,19 +1,12 @@
-/**
- * ExploreLandPage — Browse all available/listed land parcels.
- * Includes OSM map, search, filters and Buy Land (Web3 wallet trigger).
- * No backend required — data comes from AppContext mock data.
- */
 import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { useWallet } from '../../hooks/useWallet';
 import { initiateLandPurchase } from '../../lib/web3';
 import { LeafletMap } from '../gis/LeafletMap';
-import { BackButton } from '../common/BackButton';
 import {
-  Search, MapPin, Award, Layers, TrendingUp, ShoppingCart,
-  Wallet, CheckCircle2, AlertTriangle, X, Loader2, Filter,
-  SlidersHorizontal, Eye
+  Search, MapPin, Layers, ShoppingCart,
+  Wallet, CheckCircle2, AlertTriangle, X, Loader2, Eye
 } from 'lucide-react';
 
 const LISTING_PRICES: Record<string, string> = {
@@ -24,7 +17,7 @@ const LISTING_PRICES: Record<string, string> = {
 
 export const ExploreLandPage: React.FC = () => {
   const { parcels, addNotification, currentUser, isAuthenticated } = useApp();
-  const { wallet, connecting, error: walletError, connect, hasWallet } = useWallet();
+  const { wallet, connecting, connect, hasWallet } = useWallet();
   const navigate = useNavigate();
 
   const [search,          setSearch]          = useState('');
@@ -80,106 +73,106 @@ export const ExploreLandPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-transparent text-slate-900 dark:text-slate-100">
-      {/* Header strip */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div className="min-h-screen bg-white text-[#252B28]">
+      {/* Header bar */}
+      <div className="border-b border-[#E5E8E5] bg-[#F7F8F7] py-8 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white">Explore Available Land</h1>
-            <p className="text-xs text-slate-400 mt-0.5">{listed.length} parcels listed · Nigeria Land Registry</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#252B28]">Explore Land &amp; Property Listings</h1>
+            <p className="text-sm text-[#4A524D] mt-1 font-normal">
+              {listed.length} verified parcel records available for public search, cadastral inspection, and blockchain transfer.
+            </p>
           </div>
-          <div className="flex items-center gap-2">
-            {/* Wallet connect */}
+          <div>
             {wallet.connected ? (
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#13C98A]/15 border border-[#13C98A]/30 text-xs">
-                <Wallet className="w-3.5 h-3.5 text-[#13C98A]" />
-                <span className="text-[#13C98A] font-mono">{wallet.address?.slice(0,6)}…</span>
-                <span className="text-slate-400">{wallet.balance} ETH</span>
+              <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-[#CBD0C8] text-xs font-mono shadow-xs">
+                <Wallet className="w-4 h-4 text-[#245C43]" />
+                <span className="text-[#245C43] font-bold">{wallet.address?.slice(0,6)}…</span>
+                <span className="text-[#4A524D] font-medium">({wallet.balance} ETH)</span>
               </div>
             ) : (
               <button onClick={connect} disabled={connecting}
-                className="px-3 py-1.5 rounded-xl bg-[#6338F5] text-white text-xs font-semibold flex items-center gap-1.5 disabled:opacity-60">
-                {connecting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wallet className="w-3 h-3" />}
-                {connecting ? 'Connecting…' : hasWallet ? 'Connect Wallet' : 'Get MetaMask'}
+                className="px-4 py-2.5 rounded-xl bg-[#245C43] text-white text-xs font-bold flex items-center gap-2 hover:bg-[#1B4733] transition-colors shadow-xs">
+                {connecting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Wallet className="w-3.5 h-3.5" />}
+                {connecting ? 'Connecting…' : hasWallet ? 'Connect Wallet' : 'Connect Web3'}
               </button>
             )}
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-10">
-        {/* Search + filter */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        {/* Search & filter bar */}
+        <div className="flex flex-col sm:flex-row gap-3 mb-6">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#545B56]" />
             <input
               value={search} onChange={e => setSearch(e.target.value)}
-              placeholder="Search by title, LGA, state, district…"
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#171A3B] border border-indigo-500/20 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+              placeholder="Search by title number, LGA, state, district or owner..."
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white border border-[#CBD0C8] text-sm text-[#252B28] placeholder-[#545B56] focus:outline-none focus:border-[#245C43] focus:ring-2 focus:ring-[#245C43]/15 shadow-xs"
             />
           </div>
           <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)}
-            className="px-4 py-2.5 rounded-xl bg-[#171A3B] border border-indigo-500/20 text-white text-sm focus:outline-none focus:border-indigo-500">
-            <option value="all">All Status</option>
-            <option value="verified">Verified</option>
-            <option value="community_review">Community Review</option>
+            className="px-4 py-2.5 rounded-xl bg-white border border-[#CBD0C8] text-sm text-[#252B28] font-medium focus:outline-none focus:border-[#245C43] shadow-xs">
+            <option value="all">All Verification Statuses</option>
+            <option value="verified">Verified Active</option>
+            <option value="community_review">In Community Review</option>
           </select>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-5 gap-5">
-          {/* Left: parcels list */}
-          <div className="xl:col-span-2 space-y-3 max-h-[72vh] overflow-y-auto pr-1">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+          {/* Left: Parcel Cards */}
+          <div className="xl:col-span-5 space-y-3 max-h-[72vh] overflow-y-auto pr-1">
             {listed.length === 0 && (
-              <div className="text-center text-slate-500 py-12 text-sm">No parcels match your search.</div>
+              <div className="text-center text-[#4A524D] py-16 text-sm bg-[#F7F8F7] rounded-2xl border border-[#E5E8E5]">
+                No land parcels match your search query.
+              </div>
             )}
             {listed.map(parcel => {
-              const price  = LISTING_PRICES[parcel.id] ?? null;
+              const price = LISTING_PRICES[parcel.id] ?? null;
               const isOwner = parcel.ownerId === currentUser?.id;
               const isSelected = selectedParcel?.id === parcel.id;
               return (
                 <div key={parcel.id}
                   onClick={() => setSelectedParcel(parcel)}
-                  className={`p-4 rounded-2xl border cursor-pointer transition-all ${
+                  className={`p-4 rounded-xl border cursor-pointer transition-all ${
                     isSelected
-                      ? 'border-[#6338F5] bg-[#6338F5]/10'
-                      : 'border-indigo-500/15 bg-[#0d1126] hover:border-indigo-500/30'
+                      ? 'border-[#245C43] bg-white ring-2 ring-[#245C43]/20 shadow-xs'
+                      : 'border-[#E5E8E5] bg-white hover:border-[#CBD0C8]'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div>
-                      <div className="text-sm font-bold text-white font-mono">{parcel.titleNumber}</div>
-                      <div className="flex items-center gap-1 text-xs text-slate-400 mt-0.5">
-                        <MapPin className="w-3 h-3 text-[#168BFF]" />
+                      <div className="text-sm font-bold text-[#252B28] font-mono">{parcel.titleNumber}</div>
+                      <div className="flex items-center gap-1.5 text-xs text-[#4A524D] mt-0.5 font-medium">
+                        <MapPin className="w-3.5 h-3.5 text-[#245C43]" />
                         {parcel.district}, {parcel.lga}, {parcel.state}
                       </div>
                     </div>
-                    <span className={`text-[10px] font-mono px-2 py-0.5 rounded shrink-0 ${
-                      parcel.status === 'verified'
-                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                        : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                    }`}>{parcel.status}</span>
+                    <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#EBF4EF] text-[#164E35] border border-[#C4DFC9] uppercase">
+                      {parcel.status}
+                    </span>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs text-slate-400 mb-3">
-                    <span>{parcel.sizeSqm.toLocaleString()} m² · {parcel.landUse}</span>
-                    <span>₦{(parcel.marketValuation / 1_000_000).toFixed(0)}M</span>
+                  <div className="flex items-center justify-between text-xs text-[#4A524D] mb-3 font-mono">
+                    <span className="font-medium">{parcel.sizeSqm.toLocaleString()} m² · {parcel.landUse}</span>
+                    <span className="font-bold text-[#252B28] text-sm">₦{(parcel.marketValuation / 1_000_000).toFixed(0)}M</span>
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 pt-2 border-t border-[#E5E8E5]">
                     <Link to={`/portal/lands/${parcel.id}`}
                       onClick={e => e.stopPropagation()}
-                      className="flex-1 py-1.5 rounded-lg bg-slate-800 text-slate-300 text-xs font-medium text-center hover:bg-slate-700 flex items-center justify-center gap-1">
-                      <Eye className="w-3 h-3" />Details
+                      className="flex-1 py-2 rounded-lg bg-[#F7F8F7] text-[#252B28] text-xs font-semibold text-center hover:bg-[#E5E8E5] flex items-center justify-center gap-1.5 transition-colors">
+                      <Eye className="w-3.5 h-3.5" /> View Details
                     </Link>
                     {!isOwner && price && (
                       <button onClick={e => { e.stopPropagation(); openBuy(parcel); }}
-                        className="flex-1 py-1.5 rounded-lg bg-[#6338F5] text-white text-xs font-semibold hover:bg-[#5229db] flex items-center justify-center gap-1">
-                        <ShoppingCart className="w-3 h-3" />
-                        Buy · {price} ETH
+                        className="flex-1 py-2 rounded-lg bg-[#245C43] text-white text-xs font-bold hover:bg-[#1B4733] flex items-center justify-center gap-1.5 transition-colors shadow-xs">
+                        <ShoppingCart className="w-3.5 h-3.5" /> Buy · {price} ETH
                       </button>
                     )}
                     {isOwner && (
-                      <div className="flex-1 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-medium text-center">
+                      <div className="flex-1 py-2 rounded-lg bg-[#EBF4EF] text-[#164E35] border border-[#C4DFC9] text-xs font-bold text-center">
                         Your Parcel
                       </div>
                     )}
@@ -189,15 +182,15 @@ export const ExploreLandPage: React.FC = () => {
             })}
           </div>
 
-          {/* Right: OSM map showing selected parcel */}
-          <div className="xl:col-span-3">
-            <div className="sticky top-20">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-white flex items-center gap-1.5">
-                  <Layers className="w-3.5 h-3.5 text-[#13C98A]" />
-                  {selectedParcel ? `${selectedParcel.titleNumber} · ${selectedParcel.district}` : 'Select a parcel'}
+          {/* Right: OSM Leaflet Map */}
+          <div className="xl:col-span-7">
+            <div className="sticky top-20 bg-white border border-[#E5E8E5] rounded-2xl p-4 space-y-3 shadow-xs">
+              <div className="flex items-center justify-between text-xs font-mono text-[#4A524D] pb-2 border-b border-[#E5E8E5]">
+                <span className="flex items-center gap-1.5 text-[#252B28] font-bold">
+                  <Layers className="w-4 h-4 text-[#245C43]" />
+                  {selectedParcel ? `${selectedParcel.titleNumber} — ${selectedParcel.district}, ${selectedParcel.lga}` : 'Select a parcel'}
                 </span>
-                <span className="text-[10px] text-slate-500 font-mono">OpenStreetMap · WGS-84</span>
+                <span className="font-medium">OpenStreetMap · WGS-84</span>
               </div>
               <LeafletMap
                 center={selectedParcel?.coordinates[0]
@@ -207,26 +200,28 @@ export const ExploreLandPage: React.FC = () => {
                   id: p.id,
                   title: p.titleNumber,
                   coords: p.coordinates.map(c => ({ lat: c.lat, lng: c.lng })),
-                  color: p.id === selectedParcel?.id ? '#13C98A' : '#6338F5',
+                  color: p.id === selectedParcel?.id ? '#245C43' : '#545B56',
                 }))}
                 height="h-[56vh]"
                 readOnly
               />
               {selectedParcel && (
-                <div className="mt-3 p-3 rounded-xl bg-[#0d1126] border border-indigo-500/15 grid grid-cols-2 gap-2 text-xs">
-                  <div><span className="text-slate-500">Coordinates</span>
-                    <div className="text-slate-300 font-mono text-[11px] mt-0.5">
-                      {selectedParcel.coordinates.map(c => `${c.lat.toFixed(4)}°N ${c.lng.toFixed(4)}°E`).join(' · ')}
-                    </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 text-xs font-mono">
+                  <div className="bg-[#F7F8F7] p-3 rounded-xl border border-[#E5E8E5]">
+                    <span className="text-[#545B56] block text-xs font-bold">AREA</span>
+                    <span className="font-bold text-[#252B28] text-sm">{selectedParcel.sizeSqm.toLocaleString()} m²</span>
                   </div>
-                  <div><span className="text-slate-500">Area</span>
-                    <div className="text-white font-mono">{selectedParcel.sizeSqm.toLocaleString()} m²</div>
+                  <div className="bg-[#F7F8F7] p-3 rounded-xl border border-[#E5E8E5]">
+                    <span className="text-[#545B56] block text-xs font-bold">VALUATION</span>
+                    <span className="font-bold text-[#245C43] text-sm">₦{(selectedParcel.marketValuation / 1_000_000).toFixed(0)}M</span>
                   </div>
-                  <div><span className="text-slate-500">Token Hash</span>
-                    <div className="text-amber-300 font-mono truncate">{selectedParcel.tokenHash}</div>
+                  <div className="bg-[#F7F8F7] p-3 rounded-xl border border-[#E5E8E5]">
+                    <span className="text-[#545B56] block text-xs font-bold">LAND USE</span>
+                    <span className="font-bold text-[#252B28] text-sm">{selectedParcel.landUse}</span>
                   </div>
-                  <div><span className="text-slate-500">Market Value</span>
-                    <div className="text-white">₦{(selectedParcel.marketValuation / 1_000_000).toFixed(0)}M</div>
+                  <div className="bg-[#F7F8F7] p-3 rounded-xl border border-[#E5E8E5]">
+                    <span className="text-[#545B56] block text-xs font-bold">STATE</span>
+                    <span className="font-bold text-[#252B28] text-sm">{selectedParcel.state}</span>
                   </div>
                 </div>
               )}
@@ -235,76 +230,62 @@ export const ExploreLandPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── Buy Modal ─────────────────────────────────────────────────────────── */}
+      {/* Buy Modal */}
       {buyModalOpen && buyTarget && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="w-full max-w-sm bg-[#171A3B] rounded-2xl border border-indigo-500/30 shadow-2xl">
-            <div className="flex items-center justify-between p-5 border-b border-slate-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
+          <div className="w-full max-w-md bg-white rounded-2xl border border-[#E5E8E5] shadow-xl p-6 space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E5E8E5]">
               <div>
-                <h2 className="text-sm font-bold text-white">Purchase Land Title</h2>
-                <p className="text-xs text-slate-400 font-mono">{buyTarget.titleNumber}</p>
+                <h3 className="text-base font-bold text-[#252B28]">Initiate Land Acquisition</h3>
+                <p className="text-xs text-[#4A524D] font-mono">{buyTarget.titleNumber}</p>
               </div>
-              <button onClick={() => setBuyModalOpen(false)} className="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white">
+              <button onClick={() => setBuyModalOpen(false)} className="p-1.5 rounded-lg bg-[#F7F8F7] text-[#252B28] hover:bg-[#E5E8E5]">
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="p-5 space-y-4">
-              <div className="p-3 rounded-xl bg-[#0d1126] border border-slate-800 space-y-1.5 text-xs font-mono">
-                <div className="flex justify-between"><span className="text-slate-400">Location</span><span className="text-white">{buyTarget.district}, {buyTarget.lga}</span></div>
-                <div className="flex justify-between"><span className="text-slate-400">Area</span><span className="text-white">{buyTarget.sizeSqm.toLocaleString()} m²</span></div>
-                <div className="flex justify-between"><span className="text-slate-400">Owner</span><span className="text-indigo-300">{buyTarget.ownerName}</span></div>
+
+            <div className="space-y-3 text-xs">
+              <div className="p-3.5 rounded-xl bg-[#F7F8F7] border border-[#E5E8E5] space-y-1.5 font-mono">
+                <div className="flex justify-between"><span className="text-[#4A524D] font-medium">District</span><span className="text-[#252B28] font-bold">{buyTarget.district}, {buyTarget.lga}</span></div>
+                <div className="flex justify-between"><span className="text-[#4A524D] font-medium">Registered Owner</span><span className="text-[#245C43] font-bold">{buyTarget.ownerName}</span></div>
+                <div className="flex justify-between"><span className="text-[#4A524D] font-medium">Token ID</span><span className="text-[#252B28] font-bold">#{buyTarget.id}</span></div>
               </div>
 
               <div>
-                <label className="block text-xs text-slate-400 mb-1">Purchase Price (ETH)</label>
-                <input type="number" step="0.001" min="0.001" value={priceInput}
-                  onChange={e => setPriceInput(e.target.value)} disabled={txState !== 'idle'}
-                  className="w-full bg-[#0d1126] border border-slate-700 rounded-xl px-3 py-2.5 text-white font-mono text-sm focus:border-indigo-500 focus:outline-none" />
+                <label className="block text-xs text-[#252B28] font-bold mb-1">Acquisition Price (ETH)</label>
+                <input type="number" step="0.001" value={priceInput} onChange={e => setPriceInput(e.target.value)} disabled={txState !== 'idle'}
+                  className="w-full bg-white border border-[#CBD0C8] rounded-xl px-3 py-2 text-[#252B28] font-mono text-sm focus:border-[#245C43] focus:outline-none" />
               </div>
 
-              {!wallet.connected && (
-                <div className="p-3 rounded-xl bg-amber-950/30 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-2">
-                  <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-                  <span>Connect your wallet. <button onClick={connect} className="underline font-semibold">{connecting ? 'Connecting…' : 'Connect now'}</button></span>
-                </div>
-              )}
-              {wallet.connected && txState === 'idle' && (
-                <div className="p-2.5 rounded-xl bg-indigo-950/30 border border-indigo-500/20 text-indigo-300 text-xs flex items-center gap-2">
-                  <Wallet className="w-3.5 h-3.5" />
-                  <span className="font-mono">{wallet.address?.slice(0,10)}…</span>
-                  <span className="text-slate-400 ml-auto">{wallet.balance} ETH</span>
-                </div>
-              )}
               {txState === 'pending' && (
                 <div className="p-4 text-center space-y-2">
-                  <Loader2 className="w-8 h-8 text-indigo-400 animate-spin mx-auto" />
-                  <p className="text-sm text-indigo-300">Confirm in {wallet.walletName}…</p>
+                  <Loader2 className="w-6 h-6 text-[#245C43] animate-spin mx-auto" />
+                  <p className="text-xs text-[#245C43] font-bold">Awaiting Web3 wallet confirmation…</p>
                 </div>
               )}
               {txState === 'success' && (
-                <div className="p-4 text-center space-y-2 bg-emerald-950/30 border border-emerald-500/30 rounded-xl">
-                  <CheckCircle2 className="w-8 h-8 text-[#13C98A] mx-auto" />
-                  <p className="text-sm text-[#13C98A] font-semibold">Payment Submitted!</p>
-                  <p className="text-[11px] font-mono text-indigo-400 truncate">{txHash}</p>
-                  <p className="text-xs text-slate-400">Registrar review required before title transfers.</p>
+                <div className="p-4 text-center space-y-2 bg-[#EBF4EF] border border-[#C4DFC9] rounded-xl">
+                  <CheckCircle2 className="w-6 h-6 text-[#164E35] mx-auto" />
+                  <p className="text-xs font-bold text-[#164E35]">Acquisition Transaction Submitted</p>
+                  <p className="text-xs font-mono text-[#4A524D] truncate">{txHash}</p>
                 </div>
               )}
               {txState === 'error' && (
-                <div className="p-3 rounded-xl bg-rose-950/30 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
-                  <AlertTriangle className="w-3.5 h-3.5" />{txError}
+                <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-900 text-xs flex items-center gap-2 font-medium">
+                  <AlertTriangle className="w-4 h-4 text-red-700" /> {txError}
                 </div>
               )}
+            </div>
 
-              <div className="flex gap-3">
-                <button onClick={() => setBuyModalOpen(false)} className="flex-1 py-2.5 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold">
-                  {txState === 'success' ? 'Close' : 'Cancel'}
+            <div className="flex gap-3 pt-2">
+              <button onClick={() => setBuyModalOpen(false)} className="flex-1 py-2.5 rounded-xl bg-[#F7F8F7] text-[#252B28] text-xs font-bold hover:bg-[#E5E8E5]">
+                {txState === 'success' ? 'Close' : 'Cancel'}
+              </button>
+              {txState === 'idle' && (
+                <button onClick={handleBuy} className="flex-1 py-2.5 rounded-xl bg-[#245C43] text-white text-xs font-bold hover:bg-[#1B4733] flex items-center justify-center gap-1.5 shadow-xs">
+                  <ShoppingCart className="w-3.5 h-3.5" /> Submit Purchase
                 </button>
-                {txState === 'idle' && wallet.connected && (
-                  <button onClick={handleBuy} className="flex-1 py-2.5 rounded-xl bg-[#6338F5] text-white text-xs font-semibold flex items-center justify-center gap-1.5">
-                    <ShoppingCart className="w-3.5 h-3.5" />Buy with {wallet.walletName}
-                  </button>
-                )}
-              </div>
+              )}
             </div>
           </div>
         </div>

@@ -203,4 +203,144 @@ describe("LandTitleNFT", () => {
       expect(await nft.supportsInterface("0x7965db0b")).to.equal(true);
     });
   });
+
+  // ── Hardened Security & Polygon Integration Readiness ────────────────────
+  describe("Hardened security, approvals lock & lifecycle invariants", () => {
+    it("constructor rejects zero admin address", async () => {
+      const Factory = await ethers.getContractFactory("LandTitleNFT");
+      await expect(Factory.deploy(ethers.ZeroAddress)).to.be.revertedWith(
+        "LandTitleNFT: zero admin address"
+      );
+    });
+
+    it("admin does NOT automatically receive GOVERNOR_ROLE", async () => {
+      expect(await nft.hasRole(await nft.GOVERNOR_ROLE(), admin.address)).to.equal(false);
+      await issueTitle();
+      await expect(nft.connect(admin).revoke(1n, 0)).to.be.reverted;
+    });
+
+    it("reverts on duplicate parcelId issuance even when called directly", async () => {
+      await issueTitle();
+      await expect(
+        nft.connect(registrar).issueTitle(buyer.address, PARCEL_ID, SPATIAL_HASH, TOKEN_URI)
+      ).to.be.revertedWith("LandTitleNFT: parcel already issued");
+    });
+
+    it("reverts on empty parcelId, zero spatialHash, or empty tokenURI", async () => {
+      await expect(
+        nft.connect(registrar).issueTitle(owner.address, "", SPATIAL_HASH, TOKEN_URI)
+      ).to.be.revertedWith("LandTitleNFT: empty parcel ID");
+
+      await expect(
+        nft.connect(registrar).issueTitle(owner.address, PARCEL_ID, ethers.ZeroHash, TOKEN_URI)
+      ).to.be.revertedWith("LandTitleNFT: zero spatial hash");
+
+      await expect(
+        nft.connect(registrar).issueTitle(owner.address, PARCEL_ID, SPATIAL_HASH, "")
+      ).to.be.revertedWith("LandTitleNFT: empty token URI");
+    });
+
+    it("disables ERC-721 approve() and setApprovalForAll() to prevent unauthorized/phishing approvals", async () => {
+      await issueTitle();
+      await expect(nft.connect(owner).approve(buyer.address, 1n)).to.be.revertedWith(
+        "LandTitleNFT: approvals disabled; registry-controlled"
+      );
+      await expect(nft.connect(owner).setApprovalForAll(buyer.address, true)).to.be.revertedWith(
+        "LandTitleNFT: approvals disabled; registry-controlled"
+      );
+    });
+
+    it("blocks owner safeTransferFrom (3-arg and 4-arg)", async () => {
+      await issueTitle();
+      await expect(
+        nft.connect(owner)["safeTransferFrom(address,address,uint256)"](owner.address, buyer.address, 1n)
+      ).to.be.revertedWith("LandTitleNFT: only REGISTRAR can transfer");
+      await expect(
+        nft.connect(owner)["safeTransferFrom(address,address,uint256,bytes)"](
+          owner.address,
+          buyer.address,
+          1n,
+          "0x"
+        )
+      ).to.be.revertedWith("LandTitleNFT: only REGISTRAR can transfer");
+    });
+
+    it("rejects self-transfer and zero destination in registrarTransfer", async () => {
+      await issueTitle();
+      await expect(
+        nft.connect(registrar).registrarTransfer(owner.address, owner.address, 1n)
+      ).to.be.revertedWith("LandTitleNFT: self-transfer not allowed");
+      await expect(
+        nft.connect(registrar).registrarTransfer(owner.address, ethers.ZeroAddress, 1n)
+      ).to.be.revertedWith("LandTitleNFT: transfer to zero address");
+    });
+
+    it("registrarTransferWithRef emits TitleTransferred with deed reference hash", async () => {
+      await issueTitle();
+      const deedHash = ethers.keccak256(ethers.toUtf8Bytes("DEED-LAG-2026-0091"));
+      await expect(
+        nft.connect(registrar).registrarTransferWithRef(owner.address, buyer.address, 1n, deedHash)
+      )
+        .to.emit(nft, "TitleTransferred")
+        .withArgs(
+          1n,
+          owner.address,
+          buyer.address,
+          deedHash,
+          (await ethers.provider.getBlock("latest"))!.timestamp + 1
+        );
+      expect(await nft.ownerOf(1n)).to.equal(buyer.address);
+    });
+
+    it("revokeWithReference stores status, ground, gazetteRefHash, and emits TitleStatusChanged", async () => {
+      await issueTitle();
+      const gazetteHash = ethers.keccak256(ethers.toUtf8Bytes("LGSG/VOL-60/NO-12"));
+      await expect(nft.connect(governor).revokeWithReference(1n, 0, gazetteHash))
+        .to.emit(nft, "TitleStatusChanged")
+        .withArgs(
+          1n,
+          0,
+          1,
+          gazetteHash,
+          governor.address,
+          (await ethers.provider.getBlock("latest"))!.timestamp + 1
+        );
+
+      const meta = await nft.getTitleMetadata(1n);
+      expect(meta.status).to.equal(1n); // TitleStatus.Revoked
+      expect(meta.revoked).to.equal(true);
+      expect(meta.revocationGround).to.equal(0n);
+      expect(meta.gazetteRefHash).to.equal(gazetteHash);
+      expect(meta.revokedAt).to.be.gt(0n);
+    });
+
+    it("revokeWithReference rejects zero gazette hash", async () => {
+      await issueTitle();
+      await expect(
+        nft.connect(governor).revokeWithReference(1n, 0, ethers.ZeroHash)
+      ).to.be.revertedWith("LandTitleNFT: zero gazette hash");
+    });
+
+    it("PAUSER_ROLE can pause issuance/transfers while GOVERNOR_ROLE can still execute statutory revocation", async () => {
+      await issueTitle();
+      await expect(nft.connect(randomUser).pause()).to.be.reverted;
+
+      await nft.connect(admin).pause();
+      await expect(
+        nft.connect(registrar).issueTitle(buyer.address, "parcel-002", SPATIAL_HASH, TOKEN_URI)
+      ).to.be.revertedWith("Pausable: paused");
+      await expect(
+        nft.connect(registrar).registrarTransfer(owner.address, buyer.address, 1n)
+      ).to.be.revertedWith("Pausable: paused");
+
+      // Statutory revocation by Governor remains operable even during transfer pause
+      await expect(nft.connect(governor).revoke(1n, 1)).to.not.be.reverted;
+      expect(await nft.isRevoked(1n)).to.equal(true);
+
+      await nft.connect(admin).unpause();
+      await expect(
+        nft.connect(registrar).issueTitle(buyer.address, "parcel-002", SPATIAL_HASH, TOKEN_URI)
+      ).to.not.be.reverted;
+    });
+  });
 });

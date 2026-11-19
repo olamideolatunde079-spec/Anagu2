@@ -30,21 +30,28 @@ export interface TransactionResult {
   error?:  string;
 }
 
-// ── ERC-721 LandTitleNFT ABI (buy/transfer functions) ─────────────────────────
+// ── ERC-721 LandTitleNFT & LandRegistry ABIs (Polygon Amoy integration) ──────
 const LAND_NFT_ABI = [
   'function ownerOf(uint256 tokenId) view returns (address)',
   'function isRevoked(uint256 tokenId) view returns (bool)',
+  'function titleStatus(uint256 tokenId) view returns (uint8)',
+  'function spatialHash(uint256 tokenId) view returns (bytes32)',
+  'function parcelId(uint256 tokenId) view returns (string)',
   'function registrarTransfer(address from, address to, uint256 tokenId)',
   'function tokenURI(uint256 tokenId) view returns (string)',
+  'event TitleIssued(uint256 indexed tokenId, address indexed owner, string parcelId, bytes32 spatialHash, uint256 timestamp)',
+  'event TitleTransferred(uint256 indexed tokenId, address indexed from, address indexed to, bytes32 deedRefHash, uint256 timestamp)',
+  'event TitleRevoked(uint256 indexed tokenId, uint8 ground, address indexed revokedBy, uint256 timestamp)',
   'event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)',
 ];
 
-// Besu local or public testnet — configurable
+// Polygon Amoy Testnet (approved Polygon PoS development & test network; no mainnet)
 const CHAIN_CONFIG = {
-  chainId: 1337,
-  chainName: 'ANAGU Cadastre Network',
-  rpcUrls: ['http://localhost:8545'],
-  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+  chainId: 80002,
+  chainName: 'Polygon Amoy Testnet',
+  rpcUrls: ['https://rpc-amoy.polygon.technology'],
+  blockExplorerUrls: ['https://amoy.polygonscan.com'],
+  nativeCurrency: { name: 'POL', symbol: 'POL', decimals: 18 },
 };
 
 // ── Detect wallet provider ─────────────────────────────────────────────────────

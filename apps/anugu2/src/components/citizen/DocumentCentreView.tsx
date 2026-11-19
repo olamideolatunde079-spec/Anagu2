@@ -58,27 +58,27 @@ export const DocumentCentreView: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <BackButton to="/portal/dashboard" label="Back to Dashboard" />
+    <div className="space-y-6 max-w-7xl mx-auto">
+      <BackButton to="/portal/dashboard" label="Back to My Dashboard" />
       <header>
-        <h1 className="flex items-center gap-2 text-2xl font-bold text-slate-900 dark:text-white">
-          <Files className="h-6 w-6 text-indigo-500" />
-          Land documents
+        <h1 className="flex items-center gap-2 text-2xl font-bold text-[#252B28]">
+          <Files className="h-6 w-6 text-[#245C43]" />
+          My Documents
         </h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Documents attached to applications you are authorized to access.
+        <p className="mt-1 text-sm text-[#4A524D] leading-relaxed">
+          Survey plans, deeds, and supporting documents uploaded to your My ANAGU applications.
         </p>
       </header>
 
       {error && (
-        <p role="alert" className="rounded-lg border border-rose-300 bg-rose-50 p-4 text-sm text-rose-800 dark:border-rose-900 dark:bg-rose-950/30 dark:text-rose-200">
+        <p role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-900">
           {error}
         </p>
       )}
 
-      <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
+      <div className="overflow-x-auto rounded-xl border border-[#E5E8E5] bg-white shadow-xs">
         <table className="w-full min-w-[600px] text-left text-sm">
-          <thead className="border-b border-slate-200 text-xs uppercase text-slate-500 dark:border-slate-700">
+          <thead className="border-b border-[#E5E8E5] bg-[#F7F8F7] text-xs font-bold uppercase text-[#252B28]">
             <tr>
               <th className="px-4 py-3">Document</th>
               <th className="px-4 py-3">Application</th>
@@ -87,24 +87,24 @@ export const DocumentCentreView: React.FC = () => {
               <th className="px-4 py-3 text-right">Action</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-[#E5E8E5]">
             {documents.map(document => (
-              <tr key={document.id} className="border-b border-slate-100 last:border-0 dark:border-slate-800">
-                <td className="px-4 py-3">
+              <tr key={document.id} className="hover:bg-[#F7F8F7] transition-colors">
+                <td className="px-4 py-3 font-medium text-[#252B28]">
                   <span className="inline-flex items-center gap-2">
-                    <FileText className="h-4 w-4 shrink-0 text-slate-500" />
+                    <FileText className="h-4 w-4 shrink-0 text-[#245C43]" />
                     {document.fileName}
                   </span>
                 </td>
-                <td className="px-4 py-3 font-mono text-xs">{document.applicationNumber}</td>
-                <td className="px-4 py-3">{document.documentType}</td>
-                <td className="px-4 py-3">{new Date(document.createdAt).toLocaleDateString()}</td>
+                <td className="px-4 py-3 font-mono text-xs font-semibold text-[#252B28]">{document.applicationNumber}</td>
+                <td className="px-4 py-3 text-[#4A524D]">{document.documentType}</td>
+                <td className="px-4 py-3 text-[#4A524D]">{new Date(document.createdAt).toLocaleDateString()}</td>
                 <td className="px-4 py-3 text-right">
                   <button
                     type="button"
                     onClick={() => void downloadDocument(document)}
                     disabled={downloadingId === document.id}
-                    className="inline-flex items-center gap-1 rounded-md border border-slate-300 px-3 py-1.5 text-xs disabled:opacity-50 dark:border-slate-700"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-[#CBD0C8] bg-white hover:border-[#245C43] hover:text-[#245C43] px-3 py-1.5 min-h-[36px] text-xs font-semibold text-[#252B28] disabled:opacity-50 transition-colors"
                   >
                     <Download className="h-3.5 w-3.5" />
                     {downloadingId === document.id ? 'Preparing…' : 'Download'}
@@ -114,13 +114,13 @@ export const DocumentCentreView: React.FC = () => {
             ))}
             {!loading && documents.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-sm text-slate-500">
+                <td colSpan={5} className="px-4 py-10 text-center text-sm text-[#4A524D]">
                   {applications.length === 0 ? 'No application documents are available.' : 'No documents have been uploaded for your applications.'}
                 </td>
               </tr>
             )}
             {loading && (
-              <tr><td colSpan={5} className="px-4 py-8 text-center text-sm text-slate-500">Loading documents…</td></tr>
+              <tr><td colSpan={5} className="px-4 py-10 text-center text-sm text-[#4A524D]">Loading documents…</td></tr>
             )}
           </tbody>
         </table>

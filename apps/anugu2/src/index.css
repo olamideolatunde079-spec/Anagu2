@@ -1,436 +1,138 @@
 @import "tailwindcss";
-@custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
   :root {
     --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
 
-    /* Light Theme Tokens */
-    --color-bg-base: #F4F6FB;
+    /* ANAGU Professional Light Design Tokens */
+    --color-bg-base: #FFFFFF;
     --color-bg-surface: #FFFFFF;
-    --color-bg-subtle: #EDF2F9;
+    --color-bg-subtle: #F7F8F7;
     --color-bg-card: #FFFFFF;
-    --color-border: #E2E8F0;
-    --color-border-hover: #CBD5E1;
-    --color-text-main: #0B132B;
-    --color-text-muted: #64748B;
-    --color-text-subtle: #94A3B8;
-  }
-
-  html.dark, :root.dark {
-    /* Dark Theme Tokens (Calmer, Lower-Brightness Matte ANAGU Palette) */
-    --color-bg-base: #050814;
-    --color-bg-surface: #0D1126;
-    --color-bg-subtle: #080B1A;
-    --color-bg-card: #0B0F22;
-    --color-border: rgba(99, 102, 241, 0.12);
-    --color-border-hover: rgba(99, 102, 241, 0.22);
-    --color-text-main: #C5CFDF;
-    --color-text-muted: #78889F;
-    --color-text-subtle: #515F75;
+    --color-border: #E5E8E5;
+    --color-border-hover: #CBD0C8;
+    --color-text-main: #252B28;
+    --color-text-muted: #4A524D;
+    --color-text-subtle: #545B56;
+    --color-primary: #245C43;
+    --color-primary-hover: #1B4733;
   }
 
   body {
     font-family: var(--font-sans);
     background-color: var(--color-bg-base);
     color: var(--color-text-main);
-    transition: background-color 0.2s ease, color 0.2s ease;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Universal focus outline for WCAG 2.2 AA accessibility */
+  *:focus-visible {
+    outline: 2px solid #245C43 !important;
+    outline-offset: 2px !important;
   }
 }
 
-/* Dark Mode UI Color Brightness & Opacity Softening */
-html.dark .bg-\[\#080D24\],
-html.dark .bg-\[\#080d24\],
-html.dark .bg-\[\#070b20\] {
-  background-color: #050814;
-}
-
-html.dark .bg-\[\#080D24\]\/95,
-html.dark .bg-\[\#080d24\]\/90 {
-  background-color: rgba(5, 8, 20, 0.9);
-}
-
-html.dark .bg-\[\#171A3B\],
-html.dark .bg-\[\#131738\],
-html.dark .bg-\[\#171A3B\]\/90,
-html.dark .bg-\[\#171A3B\]\/80 {
-  background-color: rgba(13, 17, 38, 0.88);
-}
-
-html.dark .bg-\[\#12163b\],
-html.dark .bg-\[\#0e1333\],
-html.dark .bg-\[\#090d24\] {
-  background-color: rgba(11, 15, 34, 0.9);
-}
-
-html.dark .bg-\[\#0d122e\],
-html.dark .bg-\[\#0c102b\],
-html.dark .bg-\[\#0c102b\]\/90,
-html.dark .bg-\[\#0a0d20\] {
-  background-color: rgba(8, 11, 26, 0.88);
-}
-
-html.dark .bg-slate-900,
-html.dark .bg-slate-900\/80,
-html.dark .bg-slate-900\/60 {
-  background-color: rgba(10, 14, 30, 0.86);
-}
-
-html.dark .bg-slate-800,
-html.dark .bg-slate-800\/80 {
-  background-color: rgba(20, 26, 48, 0.85);
-}
-
-/* Soften bright accent backgrounds & gradients */
-html.dark .bg-\[\#6338F5\] {
-  background-color: #3D288C;
-}
-
-html.dark .hover\:bg-\[\#5229db\]:hover,
-html.dark .hover\:bg-\[\#5328e6\]:hover {
-  background-color: #332175;
-}
-
-html.dark .bg-\[\#168BFF\] {
-  background-color: #1A5496;
-}
-
-html.dark .bg-\[\#13C98A\] {
-  background-color: #157554;
-}
-
-html.dark .bg-indigo-600 {
-  background-color: #3A3794;
-}
-
-html.dark .bg-amber-500 {
-  background-color: #966E19;
-}
-
-html.dark .bg-amber-600 {
-  background-color: #805D14;
-}
-
-html.dark .bg-rose-600 {
-  background-color: #8C1F3A;
-}
-
-html.dark .bg-emerald-600 {
-  background-color: #136E4E;
-}
-
-/* Soften bright gradient stops & CTA buttons without dimming card text containers */
-html.dark .from-\[\#171A3B\] {
-  --tw-gradient-from: rgba(13, 17, 38, 0.92);
-}
-
-html.dark .via-\[\#1a1f4a\] {
-  --tw-gradient-via: rgba(16, 21, 46, 0.92);
-}
-
-html.dark .to-\[\#12163b\],
-html.dark .to-\[\#0d1233\] {
-  --tw-gradient-to: rgba(10, 14, 32, 0.92);
-}
-
-html.dark .from-\[\#6338F5\] {
-  --tw-gradient-from: #3D288C;
-}
-
-html.dark .to-\[\#168BFF\] {
-  --tw-gradient-to: #1A5496;
-}
-
-html.dark .to-\[\#13C98A\] {
-  --tw-gradient-to: #157554;
-}
-
-html.dark .from-amber-500 {
-  --tw-gradient-from: #966E19;
-}
-
-html.dark .to-amber-600 {
-  --tw-gradient-to: #7A5812;
-}
-
-html.dark [class*="bg-clip-text"] {
-  filter: brightness(0.76) saturate(0.7);
-}
-
-html.dark button[class*="bg-gradient-to"],
-html.dark a[class*="bg-gradient-to"] {
-  filter: brightness(0.78) saturate(0.75);
-}
-
-/* Soften bright borders */
-html.dark .border-indigo-500\/20,
-html.dark .border-indigo-500\/25,
-html.dark .border-indigo-500\/30,
-html.dark .border-indigo-500\/40 {
-  border-color: rgba(99, 102, 241, 0.13);
-}
-
-html.dark .border-emerald-500\/30,
-html.dark .border-emerald-500\/40 {
-  border-color: rgba(16, 185, 129, 0.22);
-}
-
-html.dark .border-amber-500\/30,
-html.dark .border-amber-500\/40 {
-  border-color: rgba(245, 158, 11, 0.22);
-}
-
-html.dark .border-rose-500\/30,
-html.dark .border-rose-500\/40 {
-  border-color: rgba(244, 63, 94, 0.22);
-}
-
-html.dark .border-slate-700,
-html.dark .border-slate-700\/60,
-html.dark .border-slate-700\/80 {
-  border-color: rgba(51, 65, 85, 0.45);
-}
-
-html.dark .border-slate-800 {
-  border-color: rgba(30, 41, 59, 0.65);
-}
-
-/* Soften pure white text & vivid neon accent text for lower glare */
-html.dark .text-white {
-  color: #C5CFDF;
-}
-
-html.dark .text-slate-100 {
-  color: #BCC6D6;
-}
-
-html.dark .text-slate-200 {
-  color: #ABB6C8;
-}
-
-html.dark .text-slate-300 {
-  color: #909EB5;
-}
-
-html.dark .text-\[\#6338F5\] {
-  color: #6B57B5;
-}
-
-html.dark .text-\[\#13C98A\] {
-  color: #238764;
-}
-
-html.dark .text-\[\#168BFF\] {
-  color: #366FB0;
-}
-
-html.dark .text-\[\#F0B429\] {
-  color: #AD842B;
-}
-
-html.dark .text-emerald-400,
-html.dark .text-emerald-300,
-html.dark .text-emerald-200 {
-  color: #3D8F71;
-}
-
-html.dark .text-amber-400,
-html.dark .text-amber-300,
-html.dark .text-amber-200 {
-  color: #AD8634;
-}
-
-html.dark .text-indigo-400,
-html.dark .text-indigo-300,
-html.dark .text-indigo-200 {
-  color: #7480BF;
-}
-
-html.dark .text-blue-400,
-html.dark .text-blue-300 {
-  color: #5B87BF;
-}
-
-html.dark .text-cyan-400,
-html.dark .text-cyan-300 {
-  color: #488B9E;
-}
-
-html.dark .text-purple-400,
-html.dark .text-purple-300 {
-  color: #886EB2;
-}
-
-html.dark .text-rose-400,
-html.dark .text-rose-300,
-html.dark .text-rose-200 {
-  color: #B3566C;
-}
-
-/* Soften translucent colored pill/badge fills */
-html.dark .bg-emerald-500\/20,
-html.dark .bg-emerald-500\/15,
-html.dark .bg-emerald-500\/10 {
-  background-color: rgba(16, 185, 129, 0.08);
-}
-
-html.dark .bg-amber-500\/20,
-html.dark .bg-amber-500\/15,
-html.dark .bg-amber-500\/10 {
-  background-color: rgba(245, 158, 11, 0.08);
-}
-
-html.dark .bg-indigo-500\/20,
-html.dark .bg-indigo-500\/15,
-html.dark .bg-indigo-500\/10 {
-  background-color: rgba(99, 102, 241, 0.08);
-}
-
-html.dark .bg-blue-500\/20,
-html.dark .bg-blue-500\/15,
-html.dark .bg-blue-500\/10 {
-  background-color: rgba(59, 130, 246, 0.08);
-}
-
-html.dark .bg-rose-500\/20,
-html.dark .bg-rose-500\/15,
-html.dark .bg-rose-500\/10 {
-  background-color: rgba(244, 63, 94, 0.08);
-}
-
-/* Light Mode Overrides for Hardcoded Component Utility Classes */
-html:not(.dark) {
-  color-scheme: light;
-}
-
-html:not(.dark) body {
-  background-color: #F4F6FB;
-  color: #0B132B;
-}
-
-/* Base surface containers */
-html:not(.dark) .bg-\[\#080D24\],
-html:not(.dark) .bg-\[\#070b20\] {
-  background-color: #F4F6FB;
-}
-
-/* Card surfaces */
-html:not(.dark) .bg-\[\#171A3B\],
-html:not(.dark) .bg-\[\#131738\],
-html:not(.dark) .bg-\[\#12163b\],
-html:not(.dark) .bg-\[\#090d24\] {
+/* Solid white cards */
+.card,
+.card-navy,
+.glow-card {
   background-color: #FFFFFF;
+  color: #252B28;
+  border: 1px solid #E5E8E5;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(37, 43, 40, 0.04);
 }
 
-/* Subtle inset rows & nested panels */
-html:not(.dark) .bg-\[\#0d122e\],
-html:not(.dark) .bg-\[\#0c102b\],
-html:not(.dark) .bg-\[\#080d24\]\/90 {
-  background-color: #F1F5F9;
+.card:hover {
+  border-color: #245C43;
 }
 
-/* Card borders */
-html:not(.dark) .border-slate-800,
-html:not(.dark) .border-slate-800\/80,
-html:not(.dark) .border-slate-700,
-html:not(.dark) .border-slate-700\/60,
-html:not(.dark) .border-slate-700\/80 {
-  border-color: #E2E8F0;
+/* Input Fields */
+input::placeholder,
+textarea::placeholder {
+  color: #545B56;
+  opacity: 1;
 }
 
-html:not(.dark) .border-indigo-500\/20,
-html:not(.dark) .border-indigo-500\/25,
-html:not(.dark) .border-indigo-500\/30,
-html:not(.dark) .border-indigo-500\/40 {
-  border-color: rgba(99, 102, 241, 0.2);
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #245C43;
+  box-shadow: 0 0 0 2px rgba(36, 92, 67, 0.15);
+  outline: none;
 }
 
-/* Headings and primary text in light mode */
-html:not(.dark) h1.text-white,
-html:not(.dark) h2.text-white,
-html:not(.dark) h3.text-white,
-html:not(.dark) h4.text-white {
-  color: #0F172A;
-}
-
-/* Subtle & muted text in light mode */
-html:not(.dark) .text-slate-100 {
-  color: #0F172A;
-}
-
-html:not(.dark) .text-slate-300 {
-  color: #334155;
-}
-
-html:not(.dark) .text-slate-400 {
-  color: #64748B;
-}
-
-/* Retain high-contrast white text on filled action buttons */
-html:not(.dark) button.bg-\[\#6338F5\],
-html:not(.dark) a.bg-\[\#6338F5\],
-html:not(.dark) button.bg-indigo-600,
-html:not(.dark) a.bg-indigo-600,
-html:not(.dark) [class*="bg-gradient-to"] {
+/* Primary and Secondary Action Buttons */
+.btn-primary {
+  background-color: #245C43;
   color: #FFFFFF;
+  border-radius: 10px;
+  font-weight: 600;
+  min-height: 40px;
+  padding: 0.5rem 1rem;
+  transition: background-color 0.15s ease;
 }
 
-html:not(.dark) button.bg-\[\#6338F5\] *,
-html:not(.dark) a.bg-\[\#6338F5\] *,
-html:not(.dark) button.bg-indigo-600 *,
-html:not(.dark) a.bg-indigo-600 * {
-  color: #FFFFFF !important;
+.btn-primary:hover {
+  background-color: #1B4733;
 }
 
-/* Custom subtle scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.2);
-  border-radius: 9999px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.4);
+.btn-secondary {
+  background-color: #FFFFFF;
+  color: #252B28;
+  border: 1px solid #CBD0C8;
+  border-radius: 10px;
+  font-weight: 600;
+  min-height: 40px;
+  padding: 0.5rem 1rem;
 }
 
-/* Reduced Shadows: Flat, clean, modern architectural look */
-.shadow-2xl,
-.shadow-xl {
-  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04) !important;
+.btn-secondary:hover {
+  background-color: #F7F8F7;
+  border-color: #245C43;
 }
 
-.shadow-lg {
-  box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.06), 0 1px 3px -1px rgba(0, 0, 0, 0.03) !important;
+/* Status Badges with readable high-contrast text */
+.badge-success {
+  background-color: #EBF4EF;
+  color: #164E35;
+  border: 1px solid #C4DFC9;
+  font-weight: 600;
 }
 
-.shadow-md {
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04) !important;
+.badge-warning {
+  background-color: #FEF8E7;
+  color: #8A5800;
+  border: 1px solid #F8DE9E;
+  font-weight: 600;
 }
 
-.shadow-sm,
-.shadow {
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03) !important;
+.badge-danger {
+  background-color: #FDF2F2;
+  color: #991B1B;
+  border: 1px solid #F8B4B4;
+  font-weight: 600;
 }
 
-/* Tame saturated colored box-shadow glows */
-[class*="shadow-indigo-"],
-[class*="shadow-amber-"],
-[class*="shadow-rose-"],
-[class*="shadow-cyan-"],
-[class*="shadow-emerald-"] {
-  --tw-shadow-color: transparent !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.06) !important;
+.badge-info {
+  background-color: #EFF6FF;
+  color: #1E40AF;
+  border: 1px solid #BFDBFE;
+  font-weight: 600;
 }
 
-*,
-*::before,
-*::after {
-  box-shadow: none !important;
-  text-shadow: none !important;
+.badge-neutral {
+  background-color: #F7F8F7;
+  color: #252B28;
+  border: 1px solid #E5E8E5;
+  font-weight: 600;
 }
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #FFFFFF; }
+::-webkit-scrollbar-thumb { background: #CBD0C8; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #4A524D; }

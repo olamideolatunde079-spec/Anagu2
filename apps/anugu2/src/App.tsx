@@ -6,6 +6,7 @@ import { AppProvider, useApp } from './context/AppContext';
 import { Header } from './components/common/Header';
 import { Sidebar } from './components/common/Sidebar';
 import { Footer } from './components/common/Footer';
+import { CadastralPattern } from './components/common/CadastralPattern';
 import { NFTCertificateModal } from './components/blockchain/NFTCertificateModal';
 
 // Public Pages
@@ -105,9 +106,10 @@ const AppLayout: React.FC = () => {
   const location = useLocation();
 
   const isPortal = location.pathname.startsWith('/portal');
+  const isDashboard = location.pathname === '/portal/dashboard';
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F4F6FB] dark:bg-[#080D24] text-slate-900 dark:text-slate-100 font-sans selection:bg-[#6338F5] selection:text-white relative transition-colors duration-200">
+    <div className="min-h-screen flex flex-col bg-white text-[#252B28] font-sans selection:bg-[#245C43] selection:text-white relative">
       {/* Top Navigation Bar */}
       <Header
         onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -126,11 +128,13 @@ const AppLayout: React.FC = () => {
 
         {/* Main Content Area */}
         <main
-          className={`flex-1 w-full min-w-0 ${
+          className={`flex-1 w-full min-w-0 relative bg-white ${
             isPortal ? 'p-3 sm:p-5 lg:p-8' : ''
           }`}
         >
-          <Routes>
+          {isDashboard && <CadastralPattern />}
+          <div className="relative z-10">
+            <Routes>
             {/* Admin Portal — completely separate password-protected URL */}
             <Route path="/admin" element={<AdminPortal />} />
             <Route path="/admin/*" element={<AdminPortal />} />
@@ -191,9 +195,10 @@ const AppLayout: React.FC = () => {
             <Route path="/portal/help" element={<HelpFAQView />} />
             </Route>
 
-{/* Fallback 404 */}
+            {/* Fallback 404 */}
             <Route path="*" element={<NotFoundView />} />
-          </Routes>
+            </Routes>
+          </div>
         </main>
       </div>
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Receipt, Search, Filter, ShieldCheck, ArrowUpRight, CheckCircle2 } from 'lucide-react';
+import { Receipt, Search, Filter } from 'lucide-react';
 import { BackButton } from '../common/BackButton';
 
 export const TransactionHistoryView: React.FC = () => {
@@ -17,40 +17,40 @@ export const TransactionHistoryView: React.FC = () => {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between">
-        <BackButton to="/portal/dashboard" label="Back to Dashboard" />
+        <BackButton to="/portal/dashboard" label="Back to My Dashboard" />
       </div>
 
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-          <Receipt className="w-6 h-6 text-emerald-500" />
-          On-Chain Ledger Transaction History
+        <h1 className="text-2xl font-bold text-[#252B28] flex items-center gap-2">
+          <Receipt className="w-6 h-6 text-[#245C43]" />
+          My Transactions
         </h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Immutable cryptographic ledger logs of title registrations, cadastral survey attestations, and executive orders.
+        <p className="text-sm text-[#4A524D] mt-1 leading-relaxed">
+          Verifiable blockchain ledger records of your title registrations, survey attestations, and registry transfers.
         </p>
       </div>
 
-      <div className="p-4 rounded-xl bg-white dark:bg-[#171A3B] border border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4 shadow-sm">
+      <div className="p-4 rounded-xl bg-white border border-[#E5E8E5] flex flex-wrap items-center justify-between gap-4 shadow-xs">
         <div className="relative flex-1 min-w-[240px]">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[#545B56] absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search tx hash or parcel reference..."
-            className="w-full bg-slate-50 dark:bg-[#0d122e] border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 font-mono"
+            className="w-full bg-white border border-[#CBD0C8] rounded-lg pl-9 pr-3 py-2 text-sm text-[#252B28] placeholder-[#545B56] font-mono focus:border-[#245C43] focus:outline-none"
           />
         </div>
 
-        <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
-          <Filter className="w-3.5 h-3.5 text-slate-400" />
-          <span>Type:</span>
+        <div className="flex items-center gap-2 text-sm text-[#252B28]">
+          <Filter className="w-4 h-4 text-[#4A524D]" />
+          <span className="font-medium text-[#4A524D]">Type:</span>
           <select
             value={filterType}
             onChange={e => setFilterType(e.target.value)}
-            className="bg-slate-50 dark:bg-[#0d122e] border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white"
+            className="bg-white border border-[#CBD0C8] rounded-lg px-3 py-2 text-sm text-[#252B28] focus:border-[#245C43] focus:outline-none"
           >
             <option value="ALL">All Types</option>
             <option value="TITLE_REGISTRATION">Title Registrations</option>
@@ -61,10 +61,10 @@ export const TransactionHistoryView: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-[#171A3B] rounded-2xl border border-slate-200 dark:border-indigo-500/25 p-5 shadow-xl">
+      <div className="bg-white rounded-2xl border border-[#E5E8E5] p-5 shadow-xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs font-mono min-w-[650px]">
-            <thead className="text-[11px] uppercase text-slate-400 border-b border-slate-800">
+          <table className="w-full text-left text-sm font-mono min-w-[680px]">
+            <thead className="text-xs uppercase text-[#252B28] font-bold border-b border-[#E5E8E5] bg-[#F7F8F7]">
               <tr>
                 <th className="py-3 px-3">Tx Hash</th>
                 <th className="py-3 px-3">Type</th>
@@ -76,23 +76,30 @@ export const TransactionHistoryView: React.FC = () => {
                 <th className="py-3 px-3">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800">
+            <tbody className="divide-y divide-[#E5E8E5]">
               {filtered.map(tx => (
-                <tr key={tx.id} className="hover:bg-[#0d122e] transition-colors">
-                  <td className="py-3 px-3 text-indigo-400 truncate max-w-[150px]">{tx.hash}</td>
-                  <td className="py-3 px-3 text-slate-200 font-sans font-medium text-[11px]">{tx.type}</td>
-                  <td className="py-3 px-3 text-emerald-400">#{tx.blockNumber}</td>
-                  <td className="py-3 px-3 text-slate-400">{tx.timestamp}</td>
-                  <td className="py-3 px-3 text-slate-300 truncate max-w-[120px]">{tx.from}</td>
-                  <td className="py-3 px-3 text-amber-300 font-bold">{tx.parcelTitle}</td>
-                  <td className="py-3 px-3 text-slate-400">{tx.gasFee}</td>
+                <tr key={tx.id} className="hover:bg-[#F7F8F7] transition-colors">
+                  <td className="py-3 px-3 text-[#245C43] font-semibold truncate max-w-[150px]">{tx.hash}</td>
+                  <td className="py-3 px-3 text-[#252B28] font-sans font-semibold text-xs">{tx.type}</td>
+                  <td className="py-3 px-3 text-[#245C43] font-bold">#{tx.blockNumber}</td>
+                  <td className="py-3 px-3 text-[#4A524D] text-xs">{tx.timestamp}</td>
+                  <td className="py-3 px-3 text-[#252B28] text-xs truncate max-w-[120px]">{tx.from}</td>
+                  <td className="py-3 px-3 text-[#252B28] font-bold text-xs">{tx.parcelTitle}</td>
+                  <td className="py-3 px-3 text-[#4A524D] text-xs">{tx.gasFee}</td>
                   <td className="py-3 px-3">
-                    <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    <span className="text-xs font-sans font-semibold px-2.5 py-0.5 rounded bg-[#EBF4EF] text-[#164E35] border border-[#C4DFC9]">
                       Confirmed
                     </span>
                   </td>
                 </tr>
               ))}
+              {filtered.length === 0 && (
+                <tr>
+                  <td colSpan={8} className="py-8 text-center font-sans text-sm text-[#4A524D]">
+                    No transactions match your search criteria.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Settings, Shield, Key, Bell, Moon, Sun, Smartphone } from 'lucide-react';
+import { Settings, Shield, Key, Bell, Smartphone } from 'lucide-react';
 import { BackButton } from '../common/BackButton';
 
 export const SettingsView: React.FC = () => {
-  const { theme, toggleTheme, addNotification } = useApp();
+  const { addNotification } = useApp();
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(true);
   const [emailAlerts, setEmailAlerts] = useState(true);
   const [smsAlerts, setSmsAlerts] = useState(false);
@@ -17,52 +17,52 @@ export const SettingsView: React.FC = () => {
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-          <Settings className="w-6 h-6 text-[#6338F5]" />
+        <h1 className="text-2xl font-bold text-[#252B28] flex items-center gap-2">
+          <Settings className="w-6 h-6 text-[#245C43]" />
           Account & Cadastre Security Settings
         </h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+        <p className="text-xs text-[#4A524D] mt-1">
           Cryptographic security keys, multi-factor authorization, and alert preferences.
         </p>
       </div>
 
-      <div className="bg-[#171A3B] rounded-2xl border border-indigo-500/25 p-6 shadow-2xl space-y-6">
+      <div className="bg-white rounded-xl border border-[#E5E8E5] p-6 shadow-sm space-y-6">
         {/* Security Section */}
         <div className="space-y-4">
-          <h2 className="text-sm font-bold text-white flex items-center gap-2 pb-2 border-b border-slate-700/60">
-            <Shield className="w-4 h-4 text-emerald-400" />
+          <h2 className="text-sm font-bold text-[#252B28] flex items-center gap-2 pb-3 border-b border-[#E5E8E5]">
+            <Shield className="w-4 h-4 text-[#245C43]" />
             Cryptographic Authentication
           </h2>
 
-          <div className="flex items-center justify-between p-4 rounded-xl bg-[#0d122e] border border-slate-800 text-xs">
+          <div className="flex items-center justify-between p-4 rounded-lg bg-[#F7F8F7] border border-[#E5E8E5] text-xs">
             <div>
-              <div className="font-semibold text-white flex items-center gap-2">
-                <Smartphone className="w-4 h-4 text-indigo-400" />
+              <div className="font-semibold text-[#252B28] flex items-center gap-2">
+                <Smartphone className="w-4 h-4 text-[#245C43]" />
                 Two-Factor Authentication (2FA TOTP)
               </div>
-              <p className="text-slate-400 mt-0.5">
+              <p className="text-[#4A524D] mt-0.5">
                 Required when lodging land applications, signing neighbor attestations, or executing conveyances.
               </p>
             </div>
             <button
               onClick={() => setTwoFactorEnabled(!twoFactorEnabled)}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-colors ${
+              className={`px-3 py-1.5 rounded-md font-semibold text-xs transition-colors ${
                 twoFactorEnabled
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                  : 'bg-slate-800 text-slate-400'
+                  ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                  : 'bg-white border border-[#CBD0C8] text-[#4A524D]'
               }`}
             >
               {twoFactorEnabled ? 'Enabled' : 'Disabled'}
             </button>
           </div>
 
-          <div className="flex items-center justify-between p-4 rounded-xl bg-[#0d122e] border border-slate-800 text-xs">
+          <div className="flex items-center justify-between p-4 rounded-lg bg-[#F7F8F7] border border-[#E5E8E5] text-xs">
             <div>
-              <div className="font-semibold text-white flex items-center gap-2">
-                <Key className="w-4 h-4 text-amber-400" />
+              <div className="font-semibold text-[#252B28] flex items-center gap-2">
+                <Key className="w-4 h-4 text-amber-700" />
                 Hardware Security Key (FIDO2 / WebAuthn)
               </div>
-              <p className="text-slate-400 mt-0.5">
+              <p className="text-[#4A524D] mt-0.5">
                 YubiKey or biometric TouchID hardware token registered for high-value title operations.
               </p>
             </div>
@@ -74,7 +74,7 @@ export const SettingsView: React.FC = () => {
                   type: 'success'
                 })
               }
-              className="px-3 py-1.5 rounded-lg bg-[#6338F5] text-white hover:bg-[#5229db] font-semibold"
+              className="px-3.5 py-1.5 rounded-md bg-[#245C43] text-white hover:bg-[#1B4733] font-semibold text-xs transition-colors shadow-sm"
             >
               Configure Key
             </button>
@@ -82,53 +82,32 @@ export const SettingsView: React.FC = () => {
         </div>
 
         {/* Notifications Section */}
-        <div className="space-y-4 pt-4 border-t border-slate-800">
-          <h2 className="text-sm font-bold text-white flex items-center gap-2 pb-2 border-b border-slate-700/60">
-            <Bell className="w-4 h-4 text-indigo-400" />
+        <div className="space-y-4 pt-4 border-t border-[#E5E8E5]">
+          <h2 className="text-sm font-bold text-[#252B28] flex items-center gap-2 pb-3 border-b border-[#E5E8E5]">
+            <Bell className="w-4 h-4 text-[#245C43]" />
             Cadastral Notification Preferences
           </h2>
 
           <div className="space-y-3 text-xs">
-            <label className="flex items-center justify-between p-3 rounded-xl bg-[#0d122e] border border-slate-800 cursor-pointer">
-              <span className="text-slate-200">Email notifications on title state transitions and approvals</span>
+            <label className="flex items-center justify-between p-3.5 rounded-lg bg-[#F7F8F7] border border-[#E5E8E5] cursor-pointer">
+              <span className="text-[#252B28] font-medium">Email notifications on title state transitions and official approvals</span>
               <input
                 type="checkbox"
                 checked={emailAlerts}
                 onChange={e => setEmailAlerts(e.target.checked)}
-                className="accent-[#6338F5] w-4 h-4 rounded"
+                className="accent-[#245C43] w-4 h-4 rounded"
               />
             </label>
 
-            <label className="flex items-center justify-between p-3 rounded-xl bg-[#0d122e] border border-slate-800 cursor-pointer">
-              <span className="text-slate-200">SMS alerts for neighbor boundary attestation window opening</span>
+            <label className="flex items-center justify-between p-3.5 rounded-lg bg-[#F7F8F7] border border-[#E5E8E5] cursor-pointer">
+              <span className="text-[#252B28] font-medium">SMS alerts for neighbor boundary attestation window opening</span>
               <input
                 type="checkbox"
                 checked={smsAlerts}
                 onChange={e => setSmsAlerts(e.target.checked)}
-                className="accent-[#6338F5] w-4 h-4 rounded"
+                className="accent-[#245C43] w-4 h-4 rounded"
               />
             </label>
-          </div>
-        </div>
-
-        {/* Visual Appearance */}
-        <div className="space-y-4 pt-4 border-t border-slate-800">
-          <h2 className="text-sm font-bold text-white flex items-center gap-2 pb-2 border-b border-slate-700/60">
-            {theme === 'dark' ? <Moon className="w-4 h-4 text-indigo-400" /> : <Sun className="w-4 h-4 text-amber-400" />}
-            Interface Theme
-          </h2>
-
-          <div className="flex items-center justify-between p-4 rounded-xl bg-[#0d122e] border border-slate-800 text-xs">
-            <div>
-              <div className="font-semibold text-white">Current Theme: {theme === 'dark' ? 'Dark Futuristic (Primary)' : 'Clean High-Contrast Light'}</div>
-              <p className="text-slate-400 mt-0.5">Toggle between dark executive mode and daytime light mode.</p>
-            </div>
-            <button
-              onClick={toggleTheme}
-              className="px-3 py-1.5 rounded-lg bg-[#6338F5] text-white hover:bg-[#5229db] font-semibold"
-            >
-              Switch to {theme === 'dark' ? 'Light' : 'Dark'} Mode
-            </button>
           </div>
         </div>
       </div>

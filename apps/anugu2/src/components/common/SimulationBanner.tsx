@@ -6,37 +6,38 @@ export const SimulationBanner: React.FC = () => {
   const { isOfflineMode, toggleOfflineMode, offlineQueueCount, syncOfflineQueue } = useApp();
 
   return (
-    <div className="bg-slate-100 dark:bg-[#0c102b] border-b border-slate-200 dark:border-indigo-500/20 text-xs text-slate-600 dark:text-slate-300 py-1.5 px-3 sm:px-4 transition-colors">
+    <div className="bg-[#F7F8F7] border-b border-[#E5E8E5] text-xs text-[#4A524D] py-2 px-3 sm:px-4">
       <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 sm:gap-3">
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 font-semibold text-amber-600 dark:text-amber-400">
-            <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-            <span className="text-[11px] sm:text-xs">DEMO SIMULATION</span>
+          <span className="inline-flex items-center gap-1.5 font-bold text-amber-800">
+            <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-amber-700" />
+            <span className="text-xs">DEMO SIMULATION</span>
           </span>
-          <span className="hidden sm:inline text-slate-400 dark:text-slate-500">·</span>
-          <span className="hidden sm:inline text-slate-500 dark:text-slate-400 text-[11px]">
-            Cryptographic titles, GIS validations & smart contract states are simulated locally
+          <span className="hidden sm:inline text-[#CBD0C8]">·</span>
+          <span className="hidden sm:inline text-[#4A524D] text-xs">
+            Cryptographic titles, GIS validations &amp; smart contract states are simulated locally
           </span>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-4 text-[11px]">
+        <div className="flex items-center gap-3 text-xs">
           <button
+            type="button"
             onClick={toggleOfflineMode}
-            className={`flex items-center gap-1.5 px-2 py-0.5 rounded text-xs transition-colors ${
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors ${
               isOfflineMode
-                ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/40'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                ? 'bg-amber-50 text-amber-900 border border-amber-300'
+                : 'bg-white text-[#252B28] border border-[#CBD0C8] hover:border-[#245C43]'
             }`}
             title="Toggle offline cadastral caching simulation"
           >
             {isOfflineMode ? (
               <>
-                <WifiOff className="w-3 h-3 text-amber-500" />
+                <WifiOff className="w-3.5 h-3.5 text-amber-700" />
                 <span>Offline ({offlineQueueCount} queued)</span>
               </>
             ) : (
               <>
-                <Wifi className="w-3 h-3 text-emerald-500" />
+                <Wifi className="w-3.5 h-3.5 text-[#245C43]" />
                 <span>MQTT Online</span>
               </>
             )}
@@ -44,16 +45,17 @@ export const SimulationBanner: React.FC = () => {
 
           {isOfflineMode && offlineQueueCount > 0 && (
             <button
+              type="button"
               onClick={syncOfflineQueue}
-              className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-semibold"
+              className="flex items-center gap-1 text-xs text-[#245C43] hover:underline font-bold"
             >
-              <RefreshCw className="w-3 h-3" />
+              <RefreshCw className="w-3.5 h-3.5" />
               <span>Flush</span>
             </button>
           )}
 
-          <div className="hidden md:flex items-center gap-1 text-slate-500 dark:text-slate-400">
-            <ShieldCheck className="w-3 h-3 text-[#13C98A]" />
+          <div className="hidden md:flex items-center gap-1.5 text-[#4A524D] font-medium">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#245C43]" />
             <span>Raft-BFT (4 Nodes)</span>
           </div>
         </div>

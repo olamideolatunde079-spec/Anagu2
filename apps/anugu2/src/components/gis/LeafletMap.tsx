@@ -1,13 +1,13 @@
 /**
  * LeafletMap — OpenStreetMap-based cadastral map using Leaflet.
- * Replaces Google Maps — works without any API key.
+ * Styled with ANAGU high-contrast government land administration design.
  * 
  * Features:
- * - OpenStreetMap tile layer (free, no key needed)
+ * - OpenStreetMap tile layer (free, compliant, no key needed)
  * - Polygon drawing for parcel boundary definition
  * - Parcel markers with popup info
  * - GPS location tracking
- * - Responsive, works on mobile
+ * - Clean white-dominant GIS aesthetic
  */
 import React, { useEffect, useRef, useState } from 'react';
 import { MapPin, Navigation, Trash2, CheckCircle2, AlertTriangle } from 'lucide-react';
@@ -78,15 +78,15 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
 
       // Add existing parcels
       parcels.forEach(parcel => {
-        const color = parcel.color ?? '#6338F5';
+        const color = parcel.color ?? '#245C43';
         const polygon = L.polygon(
           parcel.coords.map(c => [c.lat, c.lng] as [number, number]),
-          { color, fillColor: color, fillOpacity: 0.15, weight: 2 }
+          { color, fillColor: color, fillOpacity: 0.18, weight: 2 }
         ).addTo(map);
         polygon.bindPopup(`
-          <div style="font-family: monospace; font-size: 12px; min-width: 160px;">
-            <b style="color: #6338F5">${parcel.title}</b><br/>
-            <span style="color: #666">ID: ${parcel.id.slice(0, 8)}…</span>
+          <div style="font-family: inherit; font-size: 12px; min-width: 160px; padding: 2px;">
+            <b style="color: #245C43; font-size: 13px;">${parcel.title}</b><br/>
+            <span style="color: #4A524D; font-size: 11px;">ID: ${parcel.id.slice(0, 10)}…</span>
           </div>
         `);
       });
@@ -101,7 +101,7 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
           if (drawnPoints.length >= 3) {
             polyRef.current = L.polygon(
               drawnPoints.map(p => [p.lat, p.lng] as [number, number]),
-              { color: '#6338F5', fillColor: '#6338F5', fillOpacity: 0.2, weight: 2.5, dashArray: '6 4' }
+              { color: '#245C43', fillColor: '#245C43', fillOpacity: 0.22, weight: 2.5, dashArray: '6 4' }
             ).addTo(map);
           }
         };
@@ -112,7 +112,7 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
 
           // Add beacon marker
           const markerIcon = L.divIcon({
-            html: `<div style="width:12px;height:12px;background:#F0B429;border:2px solid #080D24;border-radius:50%;box-shadow:0 0 8px rgba(240,180,41,0.6)"></div>`,
+            html: `<div style="width:12px;height:12px;background:#245C43;border:2px solid #FFFFFF;border-radius:50%;box-shadow:0 0 6px rgba(36,92,67,0.6)"></div>`,
             iconSize: [12, 12],
             iconAnchor: [6, 6],
             className: '',
@@ -127,7 +127,6 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
           onPolygonChange?.([...drawnPoints]);
         });
 
-        // Store cleanup refs
         markersRef.current = drawnMarkers;
       }
     };
@@ -140,7 +139,7 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
         leafletRef.current = null;
       }
     };
-  }, []); // only on mount
+  }, []);
 
   // GPS tracking
   const startTracking = () => {
@@ -162,7 +161,6 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
 
   const clearPoints = async () => {
     if (!leafletRef.current) return;
-    const L = (await import('leaflet')).default;
     markersRef.current.forEach(m => leafletRef.current?.removeLayer(m));
     markersRef.current = [];
     if (polyRef.current) { leafletRef.current.removeLayer(polyRef.current); polyRef.current = null; }
@@ -172,18 +170,19 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
 
   return (
     <div className="relative w-full">
-      {/* Map container — Leaflet CSS must be loaded */}
+      {/* Map container — Leaflet CSS overrides for clean light theme */}
       <style>{`
         @import url('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
-        .leaflet-container { background: #0d1126; font-family: 'Plus Jakarta Sans', sans-serif; }
-        .leaflet-popup-content-wrapper { background: #171A3B; color: #C5CFDF; border: 1px solid rgba(99,56,245,0.3); border-radius: 12px; }
-        .leaflet-popup-tip { background: #171A3B; }
-        .leaflet-control-zoom a { background: #171A3B !important; color: #C5CFDF !important; border-color: rgba(99,56,245,0.3) !important; }
-        .leaflet-control-attribution { background: rgba(13,17,38,0.8) !important; color: #AAB4CC !important; font-size: 10px; }
-        .leaflet-control-attribution a { color: #6338F5 !important; }
+        .leaflet-container { background: #F5F6F3; font-family: inherit; }
+        .leaflet-popup-content-wrapper { background: #FFFFFF; color: #252B28; border: 1px solid #E5E8E5; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .leaflet-popup-tip { background: #FFFFFF; }
+        .leaflet-control-zoom a { background: #FFFFFF !important; color: #252B28 !important; border-color: #CBD0C8 !important; }
+        .leaflet-control-zoom a:hover { background: #F7F8F7 !important; color: #245C43 !important; }
+        .leaflet-control-attribution { background: rgba(255,255,255,0.9) !important; color: #4A524D !important; font-size: 10px; border-top-left-radius: 4px; }
+        .leaflet-control-attribution a { color: #245C43 !important; text-decoration: underline; }
       `}</style>
 
-      <div ref={mapRef} className={`w-full ${height} rounded-xl border border-indigo-500/20 overflow-hidden z-10`} />
+      <div ref={mapRef} className={`w-full ${height} rounded-xl border border-[#E5E8E5] overflow-hidden z-10`} />
 
       {/* Controls */}
       <div className="absolute bottom-4 right-4 flex flex-col gap-2 z-20">
@@ -191,17 +190,17 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
         <button
           onClick={startTracking}
           disabled={tracking}
-          className="p-2.5 rounded-xl bg-[#171A3B]/95 border border-indigo-500/30 text-slate-200 hover:border-indigo-500 hover:text-white transition-colors shadow-lg disabled:opacity-50"
+          className="p-2.5 rounded-lg bg-white border border-[#CBD0C8] text-[#252B28] hover:text-[#245C43] hover:border-[#245C43] transition-colors shadow-md disabled:opacity-50"
           title="Go to my location"
         >
-          <Navigation className={`w-4 h-4 ${tracking ? 'animate-spin text-[#13C98A]' : ''}`} />
+          <Navigation className={`w-4 h-4 ${tracking ? 'animate-spin text-[#245C43]' : ''}`} />
         </button>
 
         {/* Clear points (draw mode) */}
         {drawMode && points.length > 0 && (
           <button
             onClick={clearPoints}
-            className="p-2.5 rounded-xl bg-rose-900/90 border border-rose-500/40 text-rose-300 hover:text-white transition-colors shadow-lg"
+            className="p-2.5 rounded-lg bg-white border border-rose-300 text-rose-700 hover:bg-rose-50 transition-colors shadow-md"
             title="Clear drawn polygon"
           >
             <Trash2 className="w-4 h-4" />
@@ -211,19 +210,19 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
 
       {/* Point counter / status */}
       {drawMode && (
-        <div className="absolute top-3 left-3 z-20 bg-[#080D24]/90 backdrop-blur border border-indigo-500/30 rounded-xl px-3 py-2 text-xs font-mono">
+        <div className="absolute top-3 left-3 z-20 bg-white border border-[#CBD0C8] rounded-lg px-3 py-2 text-xs font-mono shadow-sm">
           {points.length === 0 && (
-            <span className="text-slate-400">Click map to place boundary beacons</span>
+            <span className="text-[#4A524D]">Click map to place boundary beacons</span>
           )}
           {points.length > 0 && points.length < 3 && (
-            <span className="text-amber-400">
-              <MapPin className="w-3 h-3 inline mr-1" />
+            <span className="text-amber-800 font-semibold flex items-center gap-1">
+              <MapPin className="w-3.5 h-3.5 inline text-amber-700" />
               {points.length} beacon{points.length > 1 ? 's' : ''} placed — need {3 - points.length} more
             </span>
           )}
           {points.length >= 3 && (
-            <span className="text-[#13C98A]">
-              <CheckCircle2 className="w-3 h-3 inline mr-1" />
+            <span className="text-emerald-800 font-semibold flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5 inline text-emerald-700" />
               {points.length} beacons — polygon valid
             </span>
           )}
@@ -232,8 +231,8 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
 
       {/* GPS error */}
       {gpsError && (
-        <div className="absolute top-3 right-3 z-20 bg-rose-950/90 border border-rose-500/40 rounded-xl px-3 py-2 text-xs text-rose-300 flex items-center gap-1.5">
-          <AlertTriangle className="w-3.5 h-3.5" />
+        <div className="absolute top-3 right-3 z-20 bg-rose-50 border border-rose-300 rounded-lg px-3 py-2 text-xs text-rose-800 flex items-center gap-1.5 shadow-sm">
+          <AlertTriangle className="w-3.5 h-3.5 text-rose-700" />
           {gpsError}
         </div>
       )}

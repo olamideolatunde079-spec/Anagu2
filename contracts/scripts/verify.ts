@@ -18,6 +18,7 @@
  *  10. transferFrom reverts on revoked token
  *
  * Usage:
+ *   npx hardhat run scripts/verify.ts --network polygon_amoy
  *   npx hardhat run scripts/verify.ts --network besu_local
  *   npx hardhat run scripts/verify.ts --network hardhat
  */
@@ -40,9 +41,11 @@ const LAND_TITLE_NFT_ABI = [
   "function totalSupply() external view returns (uint256)",
   "function REGISTRAR_ROLE() external view returns (bytes32)",
   "function GOVERNOR_ROLE() external view returns (bytes32)",
+  "function PAUSER_ROLE() external view returns (bytes32)",
   "function issueTitle(address to, string parcelId, bytes32 spatialHash, string tokenURI) external returns (uint256)",
   "function revoke(uint256 tokenId, uint8 ground) external",
   "function isRevoked(uint256 tokenId) external view returns (bool)",
+  "function titleStatus(uint256 tokenId) external view returns (uint8)",
   "function ownerOf(uint256 tokenId) external view returns (address)",
   "function transferFrom(address from, address to, uint256 tokenId) external",
   "function grantRole(bytes32 role, address account) external",
@@ -60,7 +63,12 @@ type CheckResult = {
 };
 
 async function main() {
-  console.log(`\n🔍 Verifying Anagu deployment on network: ${network.name}`);
+  const netInfo = await ethers.provider.getNetwork();
+  if (netInfo.chainId === 137n) {
+    throw new Error("Polygon Mainnet (chainId 137) verification writes are disabled.");
+  }
+
+  console.log(`\n🔍 Verifying Anagu deployment on network: ${network.name} (chainId ${netInfo.chainId})`);
   console.log("─".repeat(65));
 
   // ── Load deployment file ───────────────────────────────────────────────

@@ -108,7 +108,7 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [theme, setTheme] = useState<'dark' | 'light'>('light');
   const [currentRole, setCurrentRole] = useState<UserRole>('citizen');
   const [authenticatedUser, setAuthenticatedUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -130,11 +130,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Active Certificate Modal
   const [selectedCertificateParcel, setSelectedCertificateParcel] = useState<Parcel | null>(null);
 
-  // Always keep document root dark
+  // Always keep document root light
   useEffect(() => {
     const root = document.documentElement;
-    root.classList.add('dark');
-    root.classList.remove('light');
+    root.classList.remove('dark');
+    root.classList.add('light');
   }, []);
 
   // ── Local API JWT session ────────────────────────────────────────────────
@@ -187,7 +187,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // No backend fetch needed — prevents ERR_CONNECTION_REFUSED errors
 
   const toggleTheme = () => {
-    // no-op (dark mode enforced)
+    setTheme('light');
   };
 
   const currentUser = authenticatedUser || GUEST_USER;

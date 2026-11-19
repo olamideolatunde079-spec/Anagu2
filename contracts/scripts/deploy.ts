@@ -6,6 +6,7 @@ import * as path from "path";
  * Deployment script for Anagu smart contracts.
  *
  * Usage:
+ *   npx hardhat run scripts/deploy.ts --network polygon_amoy
  *   npx hardhat run scripts/deploy.ts --network besu_local
  *   npx hardhat run scripts/deploy.ts --network hardhat
  *
@@ -13,7 +14,12 @@ import * as path from "path";
  *   deployments/<networkName>.json
  */
 async function main() {
-  console.log(`\n🚀 Deploying Anagu contracts to network: ${network.name}`);
+  const netInfo = await ethers.provider.getNetwork();
+  if (netInfo.chainId === 137n) {
+    throw new Error("Polygon Mainnet (chainId 137) deployment is strictly disabled in this phase. Use polygon_amoy (80002) or hardhat.");
+  }
+
+  console.log(`\n🚀 Deploying Anagu contracts to network: ${network.name} (chainId ${netInfo.chainId})`);
   console.log("─".repeat(60));
 
   const [deployer, governor] = await ethers.getSigners();
@@ -22,7 +28,8 @@ async function main() {
   console.log(`📋 Governor address  : ${governor?.address ?? "same as deployer (single signer)"}`);
 
   const deployerBalance = await ethers.provider.getBalance(deployer.address);
-  console.log(`💰 Deployer balance  : ${ethers.formatEther(deployerBalance)} ETH\n`);
+  const symbol = netInfo.chainId === 80002n ? "POL" : "ETH";
+  console.log(`💰 Deployer balance  : ${ethers.formatEther(deployerBalance)} ${symbol}\n`);
 
   // ── 1. Deploy LandTitleNFT ────────────────────────────────────────────
   console.log("1. Deploying LandTitleNFT...");

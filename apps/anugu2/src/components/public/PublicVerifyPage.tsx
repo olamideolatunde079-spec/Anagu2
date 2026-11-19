@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { AlertTriangle, CheckCircle2, Loader2, Search, XCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Loader2, Search, XCircle, ShieldCheck } from 'lucide-react';
 import { BackButton } from '../common/BackButton';
+import { CadastralPattern } from '../common/CadastralPattern';
 import { INITIAL_PARCELS } from '../../data/mockData';
 
 type TitleVerification = {
@@ -30,7 +31,6 @@ export const PublicVerifyPage: React.FC = () => {
     setError('');
     setLoading(true);
 
-    // Search mock parcel data — no backend required
     setTimeout(() => {
       const parcel = INITIAL_PARCELS.find(p =>
         p.titleNumber.toLowerCase() === tokenId.toLowerCase() ||
@@ -71,68 +71,102 @@ export const PublicVerifyPage: React.FC = () => {
     : null;
 
   return (
-    <div className="min-h-screen bg-transparent px-4 py-10 text-slate-900 dark:text-slate-100 sm:px-6">
-      <div className="mx-auto max-w-3xl space-y-8">
-        <BackButton to="/" label="Back to Anagu" />
+    <div className="min-h-screen bg-white px-4 py-10 text-[#252B28] sm:px-6 relative">
+      <CadastralPattern />
+      <div className="mx-auto max-w-3xl space-y-8 relative z-10">
+        <BackButton to="/" label="Back to ANAGU" />
+
         <header className="space-y-3 text-center">
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">Verify a land title</h1>
-          <p className="mx-auto max-w-xl text-sm text-slate-600 dark:text-slate-300">
-            Enter an NFT token ID to check its recorded title and current status against the configured blockchain.
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F7F8F7] border border-[#E5E8E5] text-xs font-mono font-bold text-[#245C43]">
+            <ShieldCheck className="w-4 h-4" />
+            <span>PUBLIC REGISTRY VERIFICATION</span>
+          </div>
+          <h1 className="text-3xl font-bold text-[#252B28] sm:text-4xl">Verify a Land Title</h1>
+          <p className="mx-auto max-w-xl text-sm text-[#4A524D] leading-relaxed">
+            Enter a Certificate of Occupancy reference, parcel ID, or NFT token hash to check its recorded status against the state ledger.
           </p>
         </header>
 
-        <form onSubmit={handleSearch} className="flex flex-col gap-3 sm:flex-row">
+        <form onSubmit={handleSearch} className="bg-white p-4 rounded-2xl border border-[#E5E8E5] shadow-xs flex flex-col gap-3 sm:flex-row">
           <label className="relative flex-1">
-            <span className="sr-only">NFT token ID</span>
-            <Search className="absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+            <span className="sr-only">Title number or NFT token ID</span>
+            <Search className="absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-[#545B56]" />
             <input
               value={query}
               onChange={event => setQuery(event.target.value)}
-              inputMode="numeric"
-              placeholder="NFT token ID"
-              className="w-full rounded-lg border border-slate-300 bg-white py-3 pl-11 pr-4 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+              placeholder="Enter title ref or token ID (e.g. C-OF-O-2026-004912)"
+              className="w-full rounded-xl border border-[#CBD0C8] bg-white py-3 pl-11 pr-4 text-sm text-[#252B28] placeholder-[#545B56] font-mono focus:border-[#245C43] focus:outline-none"
             />
           </label>
           <button
             type="submit"
             disabled={loading || !query.trim()}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#3D288C] px-5 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#245C43] hover:bg-[#1B4733] px-6 py-3 min-h-[44px] text-sm font-semibold text-white transition-colors disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-            Verify title
+            <span>Verify Title</span>
           </button>
         </form>
 
         {error && (
-          <div role="alert" className="rounded-lg border border-rose-300 bg-rose-50 p-4 text-sm text-rose-800 dark:border-rose-900 dark:bg-rose-950/30 dark:text-rose-200">
-            <div className="flex items-start gap-2">
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-              <span>{error}</span>
+          <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-900">
+            <div className="flex items-start gap-2.5">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-700" />
+              <span className="font-medium">{error}</span>
             </div>
           </div>
         )}
 
         {title && (
-          <section aria-live="polite" className="rounded-lg border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900 sm:p-7">
-            <div className={`flex items-center gap-2 text-sm font-semibold ${title.isRevoked ? 'text-rose-700 dark:text-rose-300' : 'text-emerald-700 dark:text-emerald-300'}`}>
-              {title.isRevoked ? <XCircle className="h-5 w-5" /> : <CheckCircle2 className="h-5 w-5" />}
-              {title.isRevoked ? 'Title revoked on-chain' : 'Title exists and is active on-chain'}
+          <section aria-live="polite" className="rounded-2xl border border-[#E5E8E5] bg-white p-6 sm:p-8 shadow-xs">
+            <div
+              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-bold border ${
+                title.isRevoked
+                  ? 'bg-red-50 text-red-900 border-red-200'
+                  : 'bg-[#EBF4EF] text-[#164E35] border-[#C4DFC9]'
+              }`}
+            >
+              {title.isRevoked ? <XCircle className="h-5 w-5 text-red-700" /> : <CheckCircle2 className="h-5 w-5 text-[#245C43]" />}
+              <span>{title.isRevoked ? 'Title Revoked On-Chain' : 'Title Exists and Is Active On-Chain'}</span>
             </div>
-            <dl className="mt-5 grid gap-4 text-sm sm:grid-cols-2">
-              <div><dt className="text-slate-500">Token ID</dt><dd className="mt-1 break-all font-mono">{title.tokenId}</dd></div>
-              <div><dt className="text-slate-500">Parcel record</dt><dd className="mt-1 break-all font-mono">{title.parcelId}</dd></div>
-              <div className="sm:col-span-2"><dt className="text-slate-500">Current owner wallet</dt><dd className="mt-1 break-all font-mono">{title.ownerAddress}</dd></div>
-              <div><dt className="text-slate-500">Network chain ID</dt><dd className="mt-1 font-mono">{title.chainId}</dd></div>
-              <div><dt className="text-slate-500">Issue block</dt><dd className="mt-1 font-mono">{title.issueBlock || 'Not recorded'}</dd></div>
+
+            <dl className="mt-6 grid gap-5 text-sm sm:grid-cols-2">
+              <div className="p-3.5 rounded-xl bg-[#F7F8F7] border border-[#E5E8E5]">
+                <dt className="text-xs font-semibold uppercase tracking-wider text-[#4A524D]">Token ID</dt>
+                <dd className="mt-1 break-all font-mono font-semibold text-[#252B28]">{title.tokenId}</dd>
+              </div>
+              <div className="p-3.5 rounded-xl bg-[#F7F8F7] border border-[#E5E8E5]">
+                <dt className="text-xs font-semibold uppercase tracking-wider text-[#4A524D]">Parcel Record</dt>
+                <dd className="mt-1 break-all font-mono font-semibold text-[#252B28]">{title.parcelId}</dd>
+              </div>
+              <div className="sm:col-span-2 p-3.5 rounded-xl bg-[#F7F8F7] border border-[#E5E8E5]">
+                <dt className="text-xs font-semibold uppercase tracking-wider text-[#4A524D]">Registered Holder Reference</dt>
+                <dd className="mt-1 break-all font-mono font-semibold text-[#252B28]">{title.ownerAddress}</dd>
+              </div>
+              <div className="p-3.5 rounded-xl bg-[#F7F8F7] border border-[#E5E8E5]">
+                <dt className="text-xs font-semibold uppercase tracking-wider text-[#4A524D]">Network Chain ID</dt>
+                <dd className="mt-1 font-mono font-semibold text-[#252B28]">{title.chainId}</dd>
+              </div>
+              <div className="p-3.5 rounded-xl bg-[#F7F8F7] border border-[#E5E8E5]">
+                <dt className="text-xs font-semibold uppercase tracking-wider text-[#4A524D]">Issue Block</dt>
+                <dd className="mt-1 font-mono font-semibold text-[#245C43]">{title.issueBlock || 'Not recorded'}</dd>
+              </div>
             </dl>
+
             {title.isRevoked && title.revocationTransaction && (
-              <p className="mt-4 break-all text-xs text-rose-700 dark:text-rose-300">
+              <p className="mt-4 break-all text-xs font-medium text-red-900 bg-red-50 border border-red-200 rounded-lg p-3">
                 Revocation transaction: {title.revocationTransaction}
               </p>
             )}
+
             {explorerUrl && (
-              <a href={explorerUrl} target="_blank" rel="noreferrer" className="mt-5 inline-block text-sm font-medium text-indigo-700 underline dark:text-indigo-300">
-                View issuance transaction on Sepolia Etherscan
+              <a
+                href={explorerUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-6 inline-block text-sm font-semibold text-[#245C43] underline hover:text-[#1B4733]"
+              >
+                View issuance transaction on Besu Registry Explorer →
               </a>
             )}
           </section>

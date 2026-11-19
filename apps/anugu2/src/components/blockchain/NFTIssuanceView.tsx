@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
-import { Award, ShieldCheck, Lock, ExternalLink, QrCode, FileCheck, Layers } from 'lucide-react';
+import { Award, Lock } from 'lucide-react';
 import { BackButton } from '../common/BackButton';
 
 export const NFTIssuanceView: React.FC = () => {
@@ -15,22 +15,22 @@ export const NFTIssuanceView: React.FC = () => {
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-          <Award className="w-6 h-6 text-amber-500" />
-          NFT Title Deed & Issuance Registry
+        <h1 className="text-2xl font-bold text-[#252B28] flex items-center gap-2">
+          <Award className="w-6 h-6 text-[#245C43]" />
+          Digital Title Deed & Issuance Registry
         </h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Cryptographically registered ERC-721 Certificate of Occupancy (C of O) tokens anchored to state land gazette.
+        <p className="text-xs text-[#4A524D] mt-1">
+          Cryptographically registered Certificate of Occupancy (C of O) tokens anchored to official state land gazette.
         </p>
       </div>
 
       {/* Protocol Architecture Notice */}
-      <div className="p-4 rounded-xl bg-[#171A3B] border border-amber-500/30 text-amber-300 text-xs flex items-start gap-3">
-        <Lock className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+      <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-3">
+        <Lock className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
         <div>
-          <div className="font-bold text-white">Registry-Controlled Smart Contract Architecture</div>
-          <p className="text-slate-300 mt-0.5 leading-relaxed">
-            Unlike standard crypto collectibles, ANAGU NFT Title Deeds enforce statutory restrictions in smart contract logic: tokens cannot be transferred directly peer-to-peer. Every assignment requires Registrar validation, tax verification, and Executive Governor consent pursuant to Section 22 of the Land Use Act.
+          <div className="font-bold text-[#252B28]">Registry-Controlled Smart Contract Architecture</div>
+          <p className="text-[#4A524D] mt-1 leading-relaxed">
+            Unlike standard crypto tokens, ANAGU Title Deeds enforce statutory restrictions in smart contract logic: titles cannot be transferred directly peer-to-peer. Every assignment requires Registrar validation, stamp duty verification, and Executive Governor consent pursuant to Section 22 of the Land Use Act.
           </p>
         </div>
       </div>
@@ -40,50 +40,50 @@ export const NFTIssuanceView: React.FC = () => {
         {issuedTokens.map(parcel => (
           <div
             key={parcel.id}
-            className="bg-[#171A3B] rounded-2xl border border-indigo-500/25 overflow-hidden shadow-xl flex flex-col justify-between"
+            className="bg-white rounded-xl border border-[#E5E8E5] overflow-hidden shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow"
           >
             {/* Top Certificate Preview Strip */}
-            <div className="p-5 bg-gradient-to-b from-[#1c214c] to-[#171A3B] border-b border-slate-700/60 space-y-2">
+            <div className="p-5 bg-[#F7F8F7] border-b border-[#E5E8E5] space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold">
+                <span className="text-xs font-mono uppercase px-2 py-0.5 rounded bg-[#245C43]/10 text-[#245C43] border border-[#245C43]/20 font-bold">
                   ERC-721 TITLE DEED
                 </span>
-                <span className="text-xs font-mono text-emerald-400">Block #{parcel.blockNumber}</span>
+                <span className="text-xs font-mono text-emerald-800 font-semibold">Block #{parcel.blockNumber}</span>
               </div>
-              <h2 className="text-base font-bold text-white font-mono">{parcel.titleNumber}</h2>
-              <div className="text-xs text-slate-300">
-                Grantee: <strong className="text-white">{parcel.ownerName}</strong>
+              <h2 className="text-base font-bold text-[#252B28] font-mono">{parcel.titleNumber}</h2>
+              <div className="text-xs text-[#4A524D]">
+                Grantee: <strong className="text-[#252B28]">{parcel.ownerName}</strong>
               </div>
             </div>
 
             {/* Token Body */}
             <div className="p-5 space-y-3 text-xs">
-              <div className="space-y-1 font-mono text-[11px]">
-                <div className="text-slate-400">Token Hash Digest:</div>
-                <div className="text-indigo-300 truncate">{parcel.tokenHash}</div>
+              <div className="space-y-1 font-mono text-xs">
+                <div className="text-[#4A524D] font-medium">Token Hash Digest:</div>
+                <div className="text-[#245C43] truncate bg-[#F7F8F7] p-1.5 rounded border border-[#E5E8E5] font-semibold">{parcel.tokenHash}</div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-[#0d122e] text-[11px] font-mono">
+              <div className="grid grid-cols-2 gap-2 p-2.5 rounded-lg bg-[#F7F8F7] border border-[#E5E8E5] text-xs font-mono">
                 <div>
-                  <span className="text-slate-400 block text-[10px]">Cadastral Area</span>
-                  <span className="text-white font-bold">{parcel.sizeSqm.toLocaleString()} m²</span>
+                  <span className="text-[#4A524D] block text-xs uppercase font-semibold">Cadastral Area</span>
+                  <span className="text-[#252B28] font-bold">{parcel.sizeSqm.toLocaleString()} m²</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[10px]">Zoning</span>
-                  <span className="text-indigo-300">{parcel.landUse}</span>
+                  <span className="text-[#4A524D] block text-xs uppercase font-semibold">Zoning</span>
+                  <span className="text-[#252B28] font-semibold">{parcel.landUse}</span>
                 </div>
               </div>
 
-              <div className="text-[11px] text-slate-400">
+              <div className="text-xs text-[#4A524D]">
                 {parcel.district}, {parcel.lga}, {parcel.state} State
               </div>
             </div>
 
-            {/* Footer Buttons */}
-            <div className="p-4 bg-[#12163b] border-t border-slate-800 flex items-center justify-between gap-2">
+            {/* Footer Button */}
+            <div className="p-4 bg-white border-t border-[#E5E8E5]">
               <button
                 onClick={() => setSelectedCertificateParcel(parcel)}
-                className="w-full py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-amber-500/20"
+                className="w-full py-2.5 rounded-lg bg-[#245C43] hover:bg-[#1B4733] text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-colors shadow-sm"
               >
                 <Award className="w-4 h-4" />
                 <span>View Full Certificate (C of O)</span>
@@ -93,9 +93,9 @@ export const NFTIssuanceView: React.FC = () => {
         ))}
       </div>
       {issuedTokens.length === 0 && (
-        <p className="rounded-lg border border-slate-200 p-6 text-sm text-slate-600 dark:border-slate-700 dark:text-slate-300">
-          No NFT titles have been issued to this account.
-        </p>
+        <div className="rounded-xl border border-[#E5E8E5] bg-white p-8 text-center text-sm text-[#4A524D]">
+          No digital title deeds have been issued to this account yet.
+        </div>
       )}
     </div>
   );

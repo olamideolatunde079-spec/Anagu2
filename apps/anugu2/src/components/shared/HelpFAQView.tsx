@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { HelpCircle, ChevronDown, ChevronUp, ShieldCheck, Scale, Compass, Award } from 'lucide-react';
+import { HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { BackButton } from '../common/BackButton';
 
 export const HelpFAQView: React.FC = () => {
@@ -12,7 +12,7 @@ export const HelpFAQView: React.FC = () => {
     },
     {
       q: 'Why are direct peer-to-peer (P2P) NFT transfers blocked?',
-      a: 'Under Section 22 of the Land Use Act, 1978, no conveyance or assignment of a Right of Occupancy is legally valid without the consent of the State Governor. Open, unregulated crypto NFT transfers would create illegal off-market conveyances. ANAGU enforces statutory law through smart contracts: transfer requests must route through Deeds Registry examination, tax clearance, and Governor consent.'
+      a: 'Under Section 22 of the Land Use Act, 1978, no conveyance or assignment of a Right of Occupancy is legally valid without the consent of the State Governor. Open, unregulated crypto transfers would create illegal off-market conveyances. ANAGU enforces statutory law through smart contracts: transfer requests must route through Deeds Registry examination, tax clearance, and Governor consent.'
     },
     {
       q: 'What is Community Attestation and the 21-day notice window?',
@@ -24,7 +24,7 @@ export const HelpFAQView: React.FC = () => {
     },
     {
       q: 'What happens if a field surveyor loses cellular connectivity?',
-      a: 'ANAGU features an offline edge synchronization protocol. Surveyors can capture GPS-RTK beacon coordinates and cryptographic signatures locally in browser IndexedDB/SQLite cache. When connectivity returns, the MQTT broker automatically syncs the queued batch to consensus validator nodes.'
+      a: 'ANAGU features an offline edge synchronization protocol. Surveyors can capture GPS-RTK beacon coordinates and cryptographic signatures locally in browser cache. When connectivity returns, the MQTT broker automatically syncs the queued batch to consensus validator nodes.'
     }
   ];
 
@@ -35,11 +35,11 @@ export const HelpFAQView: React.FC = () => {
       </div>
 
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-          <HelpCircle className="w-6 h-6 text-[#6338F5]" />
+        <h1 className="text-2xl font-bold text-[#252B28] flex items-center gap-2">
+          <HelpCircle className="w-6 h-6 text-[#245C43]" />
           Cadastral Knowledge Base & Legal Guide
         </h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+        <p className="text-xs text-[#4A524D] mt-1">
           Everything you need to know about blockchain land administration, Nigerian Land Use Act compliance, and GIS topology.
         </p>
       </div>
@@ -50,18 +50,18 @@ export const HelpFAQView: React.FC = () => {
           return (
             <div
               key={i}
-              className="bg-[#171A3B] rounded-2xl border border-indigo-500/25 overflow-hidden shadow-xl"
+              className="bg-white rounded-xl border border-[#E5E8E5] overflow-hidden shadow-sm"
             >
               <button
                 onClick={() => setOpenIdx(isOpen ? null : i)}
-                className="w-full p-5 text-left flex items-center justify-between gap-4 text-sm font-bold text-white hover:text-indigo-300 transition-colors"
+                className="w-full p-5 text-left flex items-center justify-between gap-4 text-sm font-bold text-[#252B28] hover:text-[#245C43] transition-colors"
               >
                 <span>{faq.q}</span>
-                {isOpen ? <ChevronUp className="w-4 h-4 text-indigo-400 shrink-0" /> : <ChevronDown className="w-4 h-4 text-slate-400 shrink-0" />}
+                {isOpen ? <ChevronUp className="w-4 h-4 text-[#245C43] shrink-0" /> : <ChevronDown className="w-4 h-4 text-[#4A524D] shrink-0" />}
               </button>
 
               {isOpen && (
-                <div className="px-5 pb-5 text-xs text-slate-300 leading-relaxed border-t border-slate-800/80 pt-3">
+                <div className="px-5 pb-5 text-xs text-[#4A524D] leading-relaxed border-t border-[#E5E8E5] pt-3.5 bg-[#F7F8F7]">
                   {faq.a}
                 </div>
               )}

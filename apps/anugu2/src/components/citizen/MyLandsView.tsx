@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
-import { Parcel } from '../../types';
 import {
   MapPin,
   Award,
@@ -9,12 +8,6 @@ import {
   Filter,
   FilePlus,
   Eye,
-  ArrowRight,
-  ShieldCheck,
-  CheckCircle2,
-  XCircle,
-  AlertTriangle,
-  Layers
 } from 'lucide-react';
 import { BackButton } from '../common/BackButton';
 
@@ -40,26 +33,26 @@ export const MyLandsView: React.FC = () => {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between">
-        <BackButton to="/portal/dashboard" label="Back to Dashboard" />
+        <BackButton to="/portal/dashboard" label="Back to My Dashboard" />
       </div>
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <MapPin className="w-6 h-6 text-[#6338F5]" />
-            My Titled Land Registry
+          <h1 className="text-2xl font-bold text-[#252B28] flex items-center gap-2">
+            <MapPin className="w-6 h-6 text-[#245C43]" />
+            My Lands
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Browse and manage your sovereign titled parcels, geodetic boundaries, and digital Certificates of Occupancy.
+          <p className="text-sm text-[#4A524D] mt-1 leading-relaxed">
+            View and manage your verified land parcels, survey boundaries, and digital Certificates of Occupancy in My ANAGU.
           </p>
         </div>
 
         <Link
           to="/portal/register-land"
-          className="px-4 py-2.5 rounded-xl bg-[#6338F5] text-white text-xs font-semibold hover:bg-[#5229db] transition-colors flex items-center gap-2 shadow-md shadow-indigo-600/30 self-start sm:self-auto"
+          className="px-4 py-2.5 min-h-[40px] rounded-xl bg-[#245C43] hover:bg-[#1B4733] text-white text-sm font-semibold transition-colors inline-flex items-center gap-2 shadow-xs self-start sm:self-auto"
         >
           <FilePlus className="w-4 h-4" />
           <span>Register New Land</span>
@@ -67,26 +60,26 @@ export const MyLandsView: React.FC = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="p-4 rounded-xl bg-[#171A3B] border border-slate-800 flex flex-wrap items-center justify-between gap-4">
+      <div className="p-4 rounded-xl bg-white border border-[#E5E8E5] shadow-xs flex flex-wrap items-center justify-between gap-4">
         <div className="relative flex-1 min-w-[240px]">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[#545B56] absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Filter by title deed ref, district or state..."
-            className="w-full bg-[#0d122e] border border-slate-700/80 rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-indigo-500"
+            className="w-full bg-white border border-[#CBD0C8] rounded-lg pl-9 pr-3 py-2 text-sm text-[#252B28] placeholder-[#545B56] focus:outline-none focus:border-[#245C43]"
           />
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 text-xs text-slate-300">
-            <Filter className="w-3.5 h-3.5 text-slate-400" />
-            <span>Status:</span>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 text-sm text-[#252B28]">
+            <Filter className="w-4 h-4 text-[#4A524D]" />
+            <span className="font-medium text-[#4A524D]">Status:</span>
             <select
               value={filterStatus}
               onChange={e => setFilterStatus(e.target.value)}
-              className="bg-[#0d122e] border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white"
+              className="bg-white border border-[#CBD0C8] rounded-lg px-3 py-2 text-sm text-[#252B28] focus:border-[#245C43] focus:outline-none"
             >
               <option value="all">All Statuses</option>
               <option value="verified">Verified Active</option>
@@ -95,12 +88,12 @@ export const MyLandsView: React.FC = () => {
             </select>
           </div>
 
-          <div className="flex items-center gap-1.5 text-xs text-slate-300">
-            <span>Land Use:</span>
+          <div className="flex items-center gap-2 text-sm text-[#252B28]">
+            <span className="font-medium text-[#4A524D]">Land Use:</span>
             <select
               value={filterLandUse}
               onChange={e => setFilterLandUse(e.target.value)}
-              className="bg-[#0d122e] border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white"
+              className="bg-white border border-[#CBD0C8] rounded-lg px-3 py-2 text-sm text-[#252B28] focus:border-[#245C43] focus:outline-none"
             >
               <option value="all">All Types</option>
               <option value="Residential">Residential</option>
@@ -114,62 +107,62 @@ export const MyLandsView: React.FC = () => {
 
       {/* Parcels Grid */}
       {filtered.length === 0 ? (
-        <div className="p-12 text-center bg-[#171A3B] rounded-2xl border border-slate-800 space-y-3">
-          <p className="text-sm text-slate-400">No titled parcels match your search query.</p>
+        <div className="p-12 text-center bg-white rounded-2xl border border-[#E5E8E5] space-y-3 shadow-xs">
+          <p className="text-sm text-[#4A524D] font-medium">No titled parcels match your search query.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map(parcel => (
             <div
               key={parcel.id}
-              className="bg-[#171A3B] rounded-2xl border border-slate-800 hover:border-indigo-500/50 transition-all flex flex-col justify-between overflow-hidden shadow-xl"
+              className="bg-white rounded-2xl border border-[#E5E8E5] hover:border-[#245C43] transition-colors flex flex-col justify-between overflow-hidden shadow-xs"
             >
-              <div className="p-5 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono font-bold text-white text-sm">{parcel.titleNumber}</span>
+              <div className="p-5 space-y-3.5">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-mono font-bold text-[#252B28] text-sm">{parcel.titleNumber}</span>
                   <span
-                    className={`text-[10px] font-mono uppercase px-2 py-0.5 rounded ${
+                    className={`text-xs font-mono uppercase px-2.5 py-0.5 rounded font-semibold border ${
                       parcel.status === 'verified'
-                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                        ? 'bg-[#EBF4EF] text-[#164E35] border-[#C4DFC9]'
                         : parcel.status === 'community_review'
-                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                        : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                        ? 'bg-amber-50 text-amber-900 border-amber-200'
+                        : 'bg-red-50 text-red-900 border-red-200'
                     }`}
                   >
-                    {parcel.status}
+                    {parcel.status.replace('_', ' ')}
                   </span>
                 </div>
 
-                <div className="text-xs text-slate-300">
-                  <div className="font-medium text-white">{parcel.district}</div>
-                  <div className="text-slate-400">{parcel.lga}, {parcel.state} State</div>
+                <div className="text-sm text-[#252B28]">
+                  <div className="font-semibold text-[#252B28]">{parcel.district}</div>
+                  <div className="text-[#4A524D] text-xs mt-0.5">{parcel.lga}, {parcel.state} State</div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-[#0d122e] text-[11px] font-mono">
+                <div className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-[#F7F8F7] border border-[#E5E8E5] text-xs font-mono">
                   <div>
-                    <span className="text-slate-400 block text-[10px]">Area</span>
-                    <span className="text-white font-bold">{parcel.sizeSqm.toLocaleString()} m²</span>
+                    <span className="text-[#4A524D] block font-sans font-medium">Area</span>
+                    <span className="text-[#252B28] font-bold text-sm">{parcel.sizeSqm.toLocaleString()} m²</span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[10px]">Zoning</span>
-                    <span className="text-indigo-300">{parcel.landUse}</span>
+                    <span className="text-[#4A524D] block font-sans font-medium">Zoning</span>
+                    <span className="text-[#252B28] font-semibold text-sm">{parcel.landUse}</span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[10px]">Beacons</span>
-                    <span className="text-amber-400">{parcel.coordinates.length} Pillars</span>
+                    <span className="text-[#4A524D] block font-sans font-medium">Beacons</span>
+                    <span className="text-[#252B28] font-semibold text-sm">{parcel.coordinates.length} Pillars</span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[10px]">Valuation</span>
-                    <span className="text-emerald-400 font-bold">₦{(parcel.marketValuation / 1000000).toFixed(0)}M</span>
+                    <span className="text-[#4A524D] block font-sans font-medium">Valuation</span>
+                    <span className="text-[#245C43] font-bold text-sm">₦{(parcel.marketValuation / 1000000).toFixed(0)}M</span>
                   </div>
                 </div>
               </div>
 
               {/* Bottom Actions */}
-              <div className="p-4 bg-[#12163b] border-t border-slate-800/80 flex items-center justify-between gap-2">
+              <div className="p-4 bg-[#F7F8F7] border-t border-[#E5E8E5] flex items-center justify-between gap-2">
                 <Link
                   to={`/portal/lands/${parcel.id}`}
-                  className="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-200 text-xs font-semibold hover:bg-slate-700 transition-colors flex items-center gap-1.5"
+                  className="px-3.5 py-2 min-h-[38px] rounded-lg bg-white border border-[#CBD0C8] text-[#252B28] text-xs font-semibold hover:border-[#245C43] hover:text-[#245C43] transition-colors inline-flex items-center gap-1.5"
                 >
                   <Eye className="w-3.5 h-3.5" />
                   <span>Inspect Deed</span>
@@ -177,8 +170,9 @@ export const MyLandsView: React.FC = () => {
 
                 {parcel.certificateIssued && (
                   <button
+                    type="button"
                     onClick={() => setSelectedCertificateParcel(parcel)}
-                    className="px-3 py-1.5 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-semibold hover:bg-amber-500/30 transition-colors flex items-center gap-1.5"
+                    className="px-3.5 py-2 min-h-[38px] rounded-lg bg-[#245C43] hover:bg-[#1B4733] text-white text-xs font-semibold transition-colors inline-flex items-center gap-1.5"
                   >
                     <Award className="w-3.5 h-3.5" />
                     <span>C of O Certificate</span>
