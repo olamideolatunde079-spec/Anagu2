@@ -21,6 +21,10 @@ fi
 : "${POSTGRES_DB:=anagu}"
 : "${POSTGRES_USER:?POSTGRES_USER must be set}"
 : "${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}"
+if [[ "$POSTGRES_USER" == CHANGE_ME_* || "$POSTGRES_PASSWORD" == CHANGE_ME_* ]]; then
+  echo "ERROR: Replace CHANGE_ME placeholders in .env before running backups." >&2
+  exit 1
+fi
 
 mkdir -p "$BACKUP_DIR"
 DUMP_FILE="$BACKUP_DIR/${POSTGRES_DB}_${TIMESTAMP}.dump"

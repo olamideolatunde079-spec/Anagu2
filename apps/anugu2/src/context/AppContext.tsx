@@ -183,8 +183,101 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
   }, []);
 
-  // Applications come from local mock data + any new ones the user submits
-  // No backend fetch needed — prevents ERR_CONNECTION_REFUSED errors
+  // Hydrate live applications & notifications from backend when authenticated
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    let cancelled = false;
+
+    const loadLiveBackendData = async () => {
+      try {
+        const [backendApps, backendNotifs] = await Promise.all([
+          apiRequest<Array<{
+            id: string;
+            applicationRef?: string | null;
+            ownerName: string;
+            applicantId: string;
+            status: string;
+            submittedAt?: string;
+            createdAt?: string;
+            updatedAt?: string;
+            rejectionReason?: string | null;
+          }>>('/applications').catch(() => null),
+          apiRequest<Array<{
+            id: string;
+            title: string;
+            body: string;
+            category: string;
+            isRead: boolean;
+            createdAt: string;
+          }>>('/notifications').catch(() => null),
+        ]);
+
+        if (cancelled) return;
+
+        if (Array.isArray(backendApps) && backendApps.length > 0) {
+          const statusMap: Record<string, LandApplication['status']> = {
+            SUBMITTED: 'submitted',
+            SPATIAL_VERIFIED: 'survey_assigned',
+            OWNERSHIP_VERIFIED: 'community_attestation',
+            LEGAL_VERIFIED: 'registrar_review',
+            APPROVED: 'approved',
+            BLOCKCHAIN_REGISTERED: 'approved',
+            NFT_ISSUED: 'approved',
+            COMPLETED: 'approved',
+            REJECTED: 'rejected',
+            CANCELLED: 'rejected',
+          };
+          const mapped: LandApplication[] = backendApps.map((app) => ({
+            id: app.id,
+            applicationNumber: app.applicationRef ?? `ANAGU-${app.id.slice(0, 8).toUpperCase()}`,
+            applicantName: app.ownerName,
+            applicantId: app.applicantId,
+            applicantPhone: '',
+            applicantEmail: currentUser.email,
+            tenureType: 'Statutory',
+            state: 'Anambra',
+            lga: 'Awka South',
+            district: '',
+            landUse: 'Residential',
+            estimatedAreaSqm: 0,
+            status: statusMap[app.status] ?? 'submitted',
+            dateSubmitted: (app.submittedAt ?? app.createdAt ?? new Date().toISOString()).slice(0, 10),
+            lastUpdated: (app.updatedAt ?? new Date().toISOString()).slice(0, 10),
+            attestationsCount: 0,
+            requiredAttestations: 3,
+            notes: app.rejectionReason ?? `Status: ${app.status}`,
+            documents: [],
+          }));
+          setApplications((prev) => {
+            const existingIds = new Set(mapped.map((m) => m.id));
+            return [...mapped, ...prev.filter((p) => !existingIds.has(p.id))];
+          });
+        }
+
+        if (Array.isArray(backendNotifs) && backendNotifs.length > 0) {
+          const mappedNotifs: SystemNotification[] = backendNotifs.map((n) => ({
+            id: n.id,
+            title: n.title,
+            message: n.body,
+            type: n.category === 'REJECTION' ? 'warning' : 'info',
+            timestamp: n.createdAt.slice(0, 16).replace('T', ' '),
+            read: n.isRead,
+          }));
+          setNotifications((prev) => {
+            const ids = new Set(mappedNotifs.map((m) => m.id));
+            return [...mappedNotifs, ...prev.filter((p) => !ids.has(p.id))];
+          });
+        }
+      } catch {
+        // Offline demo fallback silently preserved
+      }
+    };
+
+    void loadLiveBackendData();
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated]);
 
   const toggleTheme = () => {
     setTheme('light');

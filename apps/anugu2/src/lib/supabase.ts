@@ -1,15 +1,15 @@
-/**
- * ANAGU — Auth via Supabase directly (no NestJS backend required).
- * All auth calls go to: https://wcykxpsbtbsoxxmitslk.supabase.co
- */
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL  = 'https://wcykxpsbtbsoxxmitslk.supabase.co';
-const SUPABASE_ANON = 'sb_publishable_MwJtKiIDQB-46QhW1xvkXA_Lh_apL1j';
+const API_BASE = (import.meta.env.VITE_API_URL ?? 'http://localhost:3001/api/v1').replace(/\/+$/, '');
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+const SUPABASE_ANON = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined;
 
-export const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON, {
-  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
-});
+export const supabaseClient: SupabaseClient | null =
+  SUPABASE_URL && SUPABASE_ANON
+    ? createClient(SUPABASE_URL, SUPABASE_ANON, {
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
+      })
+    : null;
 
 export interface AuthUser {
   id: string;
@@ -20,13 +20,16 @@ export interface AuthUser {
   walletAddress?: string | null;
 }
 
-// ── Storage key / event (kept for AppContext compatibility) ───────────────────
-const AUTH_STORAGE_KEY  = 'anagu.auth';
+const AUTH_STORAGE_KEY = 'anagu.auth';
 const AUTH_CHANGE_EVENT = 'anagu-auth-change';
 
-interface AuthResult { accessToken: string; user: AuthUser; }
+export interface AuthResult {
+  accessToken: string;
+  refreshToken?: string;
+  user: AuthUser;
+}
 
-function saveAuth(result: AuthResult): void {
+export function saveAuth(result: AuthResult): void {
   localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(result));
   window.dispatchEvent(new Event(AUTH_CHANGE_EVENT));
 }
@@ -34,8 +37,12 @@ function saveAuth(result: AuthResult): void {
 export function getAuth(): AuthResult | null {
   const stored = localStorage.getItem(AUTH_STORAGE_KEY);
   if (!stored) return null;
-  try { return JSON.parse(stored) as AuthResult; }
-  catch { localStorage.removeItem(AUTH_STORAGE_KEY); return null; }
+  try {
+    return JSON.parse(stored) as AuthResult;
+  } catch {
+    localStorage.removeItem(AUTH_STORAGE_KEY);
+    return null;
+  }
 }
 
 export function subscribeToAuth(callback: () => void): () => void {
@@ -47,113 +54,143 @@ export function subscribeToAuth(callback: () => void): () => void {
   };
 }
 
-// ── Sign up — Supabase Auth directly, then auto-confirm via service role ──────
 export async function signUpAndIn(
   email: string,
   password: string,
-  meta: Record<string, unknown>
+  meta: Record<string, unknown>,
 ): Promise<{ error: string | null }> {
   try {
-    const { data, error } = await supabaseClient.auth.signUp({
-      email: email.trim().toLowerCase(),
-      password,
-      options: { data: { full_name: meta.full_name, role: 'CITIZEN', phone: meta.phone, nin: meta.nin } },
+    const res = await fetch(`${API_BASE}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email.trim().toLowerCase(),
+        password,
+        fullName: String(meta.full_name ?? email.split('@')[0] ?? 'Citizen'),
+        phone: meta.phone ? String(meta.phone) : undefined,
+        nationalId: meta.nin ? String(meta.nin) : undefined,
+      }),
     });
-    if (error) return { error: error.message };
 
-    // Auto-confirm via service-role endpoint (silent — if it fails we still try signIn)
-    if (data.user?.id) {
-      await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${data.user.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          apikey: 'sb_secret_thAF9VsMgYKehwhRhBj0TA_gTVhKROO',
-          Authorization: 'Bearer sb_secret_thAF9VsMgYKehwhRhBj0TA_gTVhKROO',
-        },
-        body: JSON.stringify({ email_confirm: true }),
-      }).catch(() => null); // non-fatal
+    const data = await res.json().catch(() => null);
+    if (!res.ok) {
+      const msg = data?.message;
+      return { error: Array.isArray(msg) ? msg.join(', ') : String(msg ?? 'Registration failed.') };
     }
 
-    // Immediately sign in
-    const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({
-      email: email.trim().toLowerCase(),
-      password,
-    });
-    if (signInError) {
-      // Account created but email not confirmed — tell user clearly
-      return { error: `Account created! Please check ${email} for a confirmation email, then sign in.` };
+    if (!data?.accessToken || !data?.user) {
+      return { error: 'Invalid response from authentication server.' };
     }
-
-    const session = signInData.session;
-    const user    = signInData.user;
-    if (!session || !user) return { error: 'Sign-in failed after registration.' };
 
     saveAuth({
-      accessToken: session.access_token,
+      accessToken: data.accessToken,
+      refreshToken: data.refreshToken,
       user: {
-        id:       user.id,
-        email:    user.email ?? '',
-        fullName: String(user.user_metadata?.full_name ?? meta.full_name ?? ''),
-        role:     'CITIZEN',
+        id: data.user.id,
+        email: data.user.email,
+        fullName: data.user.fullName ?? '',
+        role: data.user.role ?? 'CITIZEN',
+        nationalId: data.user.nationalId ?? null,
+        walletAddress: data.user.walletAddress ?? null,
       },
     });
     return { error: null };
   } catch (err) {
-    return { error: err instanceof Error ? err.message : 'Registration failed.' };
+    return {
+      error:
+        err instanceof TypeError
+          ? 'Backend authentication server is unreachable. Start the ANAGU API on port 3001.'
+          : err instanceof Error
+          ? err.message
+          : 'Registration failed.',
+    };
   }
 }
 
-// ── Sign in ──────────────────────────────────────────────────────────────────
 export async function signIn(
   email: string,
-  password: string
+  password: string,
 ): Promise<{ error: string | null }> {
   try {
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-      email: email.trim().toLowerCase(),
-      password,
+    const res = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email.trim().toLowerCase(),
+        password,
+      }),
     });
-    if (error) {
-      const msg = error.message.toLowerCase();
-      if (msg.includes('invalid') || msg.includes('credentials'))
-        return { error: 'Incorrect email or password.' };
-      if (msg.includes('not confirmed') || msg.includes('confirm'))
-        return { error: `Email not confirmed. Check ${email} for a confirmation link.` };
-      return { error: error.message };
-    }
-    if (!data.session || !data.user) return { error: 'Sign-in failed.' };
 
-    const meta = data.user.user_metadata ?? {};
+    const data = await res.json().catch(() => null);
+    if (!res.ok) {
+      if (res.status === 401) {
+        return { error: 'Incorrect email or password.' };
+      }
+      const msg = data?.message;
+      return { error: Array.isArray(msg) ? msg.join(', ') : String(msg ?? 'Sign-in failed.') };
+    }
+
+    if (!data?.accessToken || !data?.user) {
+      return { error: 'Invalid authentication server response.' };
+    }
+
     saveAuth({
-      accessToken: data.session.access_token,
+      accessToken: data.accessToken,
+      refreshToken: data.refreshToken,
       user: {
-        id:       data.user.id,
-        email:    data.user.email ?? '',
-        fullName: String(meta.full_name ?? data.user.email?.split('@')[0] ?? 'User'),
-        role:     String(meta.role ?? 'CITIZEN'),
+        id: data.user.id,
+        email: data.user.email,
+        fullName: data.user.fullName ?? data.user.email?.split('@')[0] ?? 'User',
+        role: data.user.role ?? 'CITIZEN',
+        nationalId: data.user.nationalId ?? null,
+        walletAddress: data.user.walletAddress ?? null,
       },
     });
     return { error: null };
   } catch (err) {
-    return { error: err instanceof Error ? err.message : 'Sign-in failed.' };
+    return {
+      error:
+        err instanceof TypeError
+          ? 'Backend authentication server is unreachable. Start the ANAGU API on port 3001.'
+          : err instanceof Error
+          ? err.message
+          : 'Sign-in failed.',
+    };
   }
 }
 
-// ── Sign out ─────────────────────────────────────────────────────────────────
 export function signOut(): void {
-  supabaseClient.auth.signOut().catch(() => null);
+  const current = getAuth();
+  if (current?.accessToken) {
+    fetch(`${API_BASE}/auth/logout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${current.accessToken}`,
+      },
+      body: JSON.stringify({ refreshToken: current.refreshToken }),
+    }).catch(() => null);
+  }
+  supabaseClient?.auth.signOut().catch(() => null);
   localStorage.removeItem(AUTH_STORAGE_KEY);
   window.dispatchEvent(new Event(AUTH_CHANGE_EVENT));
 }
 
-// ── Password reset ───────────────────────────────────────────────────────────
 export async function sendPasswordReset(
   email: string,
   redirectTo?: string,
 ): Promise<{ error: Error | null }> {
+  if (!supabaseClient) {
+    return {
+      error: new Error(
+        'Self-service email recovery requires SMTP/auth provider configuration; contact your ANAGU administrator.',
+      ),
+    };
+  }
   const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-    redirectTo: redirectTo ?? (typeof window !== 'undefined'
-      ? `${window.location.origin}/auth/reset-password` : undefined),
+    redirectTo:
+      redirectTo ??
+      (typeof window !== 'undefined' ? `${window.location.origin}/auth/reset-password` : undefined),
   });
   return { error: error ? new Error(error.message) : null };
 }

@@ -30,6 +30,10 @@ fi
 : "${POSTGRES_DB:=anagu}"
 : "${POSTGRES_USER:?POSTGRES_USER must be set}"
 : "${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}"
+if [[ "$POSTGRES_USER" == CHANGE_ME_* || "$POSTGRES_PASSWORD" == CHANGE_ME_* ]]; then
+  echo "ERROR: Replace CHANGE_ME placeholders in .env before running restore." >&2
+  exit 1
+fi
 
 echo "[restore] Restoring ${DUMP_FILE} into '${POSTGRES_DB}'..."
 if command -v docker >/dev/null 2>&1 && docker ps --format '{{.Names}}' 2>/dev/null | grep -qx 'anagu_postgres'; then

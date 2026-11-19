@@ -40,6 +40,9 @@ export class AuditEvent {
   @Column({ type: 'jsonb', nullable: true })
   metadata: Record<string, unknown> | null;
 
+  @Column({ name: 'ip_address', type: 'inet', nullable: true })
+  ipAddress: string | null;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 }

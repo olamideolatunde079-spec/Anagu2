@@ -26,11 +26,13 @@ Versioned, reversible SQL migrations live in `infra/postgres/migrations/`:
 | `004_oracle_attestations_documents` | `oracle_verifications`, `attestations`, `documents` (strict `is_private = TRUE`, `visibility = 'PRIVATE'`, SHA-256 hash, max 25 MB check) |
 | `005_titles_blockchain_transfers_marketplace` | `blockchain_transactions` (default Polygon Amoy `80002`), `land_titles`, `title_ownership_history`, `land_transfers`, `marketplace_listings` |
 | `006_notifications_mqtt_audit_triggers` | `notifications`, `mqtt_events`, `audit_events` (hash-chained SHA-256 `pgcrypto` + `BEFORE UPDATE OR DELETE` immutability trigger) |
+| `007_extended_land_marketplace_admin_rbac` | `account_verifications`, `application_status_history`, `legal_reviews`, `document_verifications`, `document_access_grants`, `payment_transactions`, `platform_commissions`, `settlement_records`, `administrative_configs`, least-privilege `anagu_app_role` |
 
 Reference seeds live in `infra/postgres/seeds/`:
 - `001_roles_permissions.sql` — Statutory RBAC matrix
 - `002_nigeria_states_lgas.sql` — 36 Nigerian States + FCT Abuja, representative LGAs, jurisdictions, and state registry ministries
 - `003_dev_seed.sql` — Development-only GIS overlap parcel fixture (never loaded in production)
+- `004_admin_configs.sql` — Non-sensitive administrative defaults (SRID `4326`, `0.5m` tolerance, 25 MB limit, Polygon Amoy `80002`)
 
 ---
 

@@ -16,11 +16,6 @@ export interface AuditLogParams {
   ipAddress?:   string;
 }
 
-/**
- * Immutable audit trail — every state transition in the registration
- * workflow is recorded here. No UPDATE or DELETE is permitted on audit_events
- * (enforced at the DB level by SQL rules in 02_schema.sql).
- */
 @Injectable()
 export class AuditService {
   constructor(
@@ -30,23 +25,24 @@ export class AuditService {
 
   async log(params: AuditLogParams): Promise<AuditEvent> {
     const event = this.auditRepo.create({
-      entityType:  params.entityType,
-      entityId:    params.entityId,
-      eventType:   params.eventType,
-      fromStatus:  params.fromStatus ?? null,
-      toStatus:    params.toStatus   ?? null,
-      actorRole:   params.actorRole  ?? null,
-      actorId:     params.actorId,
+      entityType:   params.entityType,
+      entityId:     params.entityId,
+      eventType:    params.eventType,
+      fromStatus:   params.fromStatus ?? null,
+      toStatus:     params.toStatus   ?? null,
+      actorRole:    params.actorRole  ?? null,
+      actorId:      params.actorId,
       actorAddress: params.actorAddress ?? null,
-      metadata:    params.metadata   ?? null,
+      metadata:     params.metadata   ?? null,
+      ipAddress:    params.ipAddress  ?? null,
     });
     return this.auditRepo.save(event);
   }
 
   async getByEntity(entityType: string, entityId: string): Promise<AuditEvent[]> {
     return this.auditRepo.find({
-      where:  { entityType, entityId },
-      order:  { createdAt: 'ASC' },
+      where: { entityType, entityId },
+      order: { createdAt: 'ASC' },
     });
   }
 
@@ -54,7 +50,25 @@ export class AuditService {
     return this.auditRepo.find({
       where: { eventType },
       order: { createdAt: 'DESC' },
-      take:  200,
+      take: 200,
+    });
+  }
+
+  async searchEvents(filters: {
+    entityType?: string;
+    eventType?: string;
+    actorId?: string;
+    limit?: number;
+  }): Promise<AuditEvent[]> {
+    const where: Record<string, string> = {};
+    if (filters.entityType) where.entityType = filters.entityType;
+    if (filters.eventType) where.eventType = filters.eventType;
+    if (filters.actorId) where.actorId = filters.actorId;
+
+    return this.auditRepo.find({
+      where,
+      order: { createdAt: 'DESC' },
+      take: Math.min(Math.max(filters.limit ?? 100, 1), 500),
     });
   }
 }

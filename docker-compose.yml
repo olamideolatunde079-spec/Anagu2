@@ -11,10 +11,12 @@
 networks:
   # Isolated internal network — no outbound internet routing for data stores
   anagu_internal:
+    name: anagu_internal
     driver: bridge
     internal: true
   # Host-access bridge for local development tools (bound to 127.0.0.1)
   anagu_edge:
+    name: anagu_edge
     driver: bridge
 
 volumes:

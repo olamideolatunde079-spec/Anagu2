@@ -8,8 +8,17 @@ export class LandTitle {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column({ name: 'title_number', type: 'varchar', length: 64, unique: true, nullable: true })
+  titleNumber: string | null;
+
   @Column({ name: 'token_id', type: 'bigint', unique: true })
   tokenId: string;
+
+  @Column({ name: 'chain_id', type: 'bigint', default: '80002' })
+  chainId: string;
+
+  @Column({ name: 'contract_address', type: 'varchar', length: 42, nullable: true })
+  contractAddress: string | null;
 
   @Column({ name: 'parcel_id' })
   parcelId: string;
@@ -26,8 +35,17 @@ export class LandTitle {
   @Column({ name: 'tx_hash', length: 66 })
   txHash: string;
 
+  @Column({ name: 'blockchain_tx_id', type: 'uuid', nullable: true })
+  blockchainTxId: string | null;
+
   @Column({ name: 'block_number', nullable: true, type: 'bigint' })
   blockNumber: string | null;
+
+  @Column({ name: 'spatial_hash_hex', type: 'varchar', length: 66, nullable: true })
+  spatialHashHex: string | null;
+
+  @Column({ name: 'metadata_hash', type: 'varchar', length: 66, nullable: true })
+  metadataHash: string | null;
 
   @Column({ name: 'token_uri', type: 'text', nullable: true })
   tokenUri: string | null;
@@ -37,6 +55,9 @@ export class LandTitle {
 
   @Column({ name: 'revocation_tx', type: 'varchar', length: 66, nullable: true })
   revocationTx: string | null;
+
+  @Column({ name: 'revocation_tx_id', type: 'uuid', nullable: true })
+  revocationTxId: string | null;
 
   @Column({
     name: 'revocation_ground',

@@ -20,6 +20,9 @@ export class MqttEvent {
   @Column({ name: 'payload_bytes', type: 'integer', nullable: true })
   payloadBytes: number | null;
 
+  @Column({ name: 'error_message', type: 'text', nullable: true })
+  errorMessage: string | null;
+
   @Column({ default: false })
   delivered: boolean;
 

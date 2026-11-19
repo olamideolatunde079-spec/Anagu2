@@ -8,17 +8,19 @@ import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { User } from './entities/user.entity';
+import { AuthSession } from './entities/auth-session.entity';
+import { resolveJwtSecret } from './jwt-secret.helper';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, AuthSession]),
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        secret: config.get<string>('JWT_SECRET', 'dev_secret_replace_in_production'),
-        signOptions: { expiresIn: config.get<string>('JWT_EXPIRES_IN', '24h') },
+        secret: resolveJwtSecret(config),
+        signOptions: { expiresIn: config.get<string>('JWT_EXPIRES_IN', '1d') },
       }),
     }),
   ],

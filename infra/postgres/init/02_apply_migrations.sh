@@ -20,8 +20,8 @@ for up_file in $(ls -1 "${MIGRATIONS_DIR}"/*.up.sql | sort); do
     -c "INSERT INTO schema_migrations (version, description, checksum_sha256) VALUES ('${version}', 'Initialized on container bootstrap', '${checksum}') ON CONFLICT (version) DO NOTHING;"
 done
 
-echo "[anagu-db-init] Applying reference seeds (roles, permissions, states/LGAs)..."
-for seed_file in "${SEEDS_DIR}/001_roles_permissions.sql" "${SEEDS_DIR}/002_nigeria_states_lgas.sql"; do
+echo "[anagu-db-init] Applying reference seeds (roles, permissions, states/LGAs, admin configs)..."
+for seed_file in "${SEEDS_DIR}/001_roles_permissions.sql" "${SEEDS_DIR}/002_nigeria_states_lgas.sql" "${SEEDS_DIR}/004_admin_configs.sql"; do
   if [[ -f "${seed_file}" ]]; then
     echo "[anagu-db-init] -> Seeding $(basename "${seed_file}")"
     psql -v ON_ERROR_STOP=1 --username "${POSTGRES_USER}" --dbname "${POSTGRES_DB}" -f "${seed_file}"

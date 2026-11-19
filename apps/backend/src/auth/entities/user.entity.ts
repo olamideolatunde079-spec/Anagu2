@@ -4,11 +4,11 @@ import {
 } from 'typeorm';
 
 export enum UserRole {
-  CITIZEN           = 'CITIZEN',
-  SURVEYOR          = 'SURVEYOR',
-  REGISTRAR         = 'REGISTRAR',
+  CITIZEN            = 'CITIZEN',
+  SURVEYOR           = 'SURVEYOR',
+  REGISTRAR          = 'REGISTRAR',
   LAND_ADMINISTRATOR = 'LAND_ADMINISTRATOR',
-  GOVERNOR          = 'GOVERNOR',
+  GOVERNOR           = 'GOVERNOR',
 }
 
 @Entity('users')
@@ -37,8 +37,23 @@ export class User {
   @Column({ name: 'wallet_address', type: 'varchar', length: 42, nullable: true })
   walletAddress: string | null;
 
+  @Column({ name: 'auth_provider', type: 'text', default: 'LOCAL' })
+  authProvider: string;
+
+  @Column({ name: 'external_auth_id', type: 'text', unique: true, nullable: true })
+  externalAuthId: string | null;
+
+  @Column({ name: 'email_verified', default: false })
+  emailVerified: boolean;
+
+  @Column({ name: 'mfa_enabled', default: false })
+  mfaEnabled: boolean;
+
   @Column({ name: 'is_active', default: true })
   isActive: boolean;
+
+  @Column({ name: 'last_login_at', type: 'timestamptz', nullable: true })
+  lastLoginAt: Date | null;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

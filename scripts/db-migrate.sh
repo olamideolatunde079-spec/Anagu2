@@ -27,8 +27,8 @@ DB_NAME="${POSTGRES_DB:-anagu}"
 DB_USER="${POSTGRES_USER:-}"
 DB_PASSWORD="${POSTGRES_PASSWORD:-}"
 
-if [[ -z "$DB_USER" || -z "$DB_PASSWORD" ]]; then
-  echo "ERROR: POSTGRES_USER and POSTGRES_PASSWORD must be set in .env or environment." >&2
+if [[ -z "$DB_USER" || -z "$DB_PASSWORD" || "$DB_PASSWORD" == CHANGE_ME_* ]]; then
+  echo "ERROR: POSTGRES_USER and a non-placeholder POSTGRES_PASSWORD must be set in .env or environment." >&2
   exit 1
 fi
 
@@ -142,7 +142,7 @@ cmd_status() {
 
 cmd_seed() {
   local include_dev="${1:-}"
-  for seed_file in "$SEEDS_DIR/001_roles_permissions.sql" "$SEEDS_DIR/002_nigeria_states_lgas.sql"; do
+  for seed_file in "$SEEDS_DIR/001_roles_permissions.sql" "$SEEDS_DIR/002_nigeria_states_lgas.sql" "$SEEDS_DIR/004_admin_configs.sql"; do
     echo "[seed] Applying $(basename "$seed_file")..."
     run_psql_file "$seed_file"
   done
