@@ -150,7 +150,7 @@ export const INITIAL_PARCELS: Parcel[] = [
     ipfsDocumentHash: 'QmX927490fhekslks02941094hjfkslz99021',
     certificateIssued: true,
     blockNumber: 1729104,
-    coverPhoto: '/src/assets/images/trans_amadi_ph_commercial_plot_1795166439131.jpg',
+    coverPhoto: '/assets/images/trans_amadi_ph_commercial_plot_1795166439131.jpg',
     galleryPhotos: [
       'https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80'

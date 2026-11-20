@@ -15,6 +15,7 @@
   },
   "scripts": {
     "dev":           "node ./scripts/start-web.cjs",
+    "start":         "npm --prefix apps/anugu2 run start",
     "install:all":   "npm install --workspaces --if-present",
     "backend":       "npm run start:dev --workspace=apps/backend",
     "web":           "node ./scripts/start-web.cjs",
