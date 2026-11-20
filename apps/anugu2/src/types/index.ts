@@ -66,6 +66,11 @@ export interface Parcel {
   ipfsDocumentHash: string;
   certificateIssued: boolean;
   blockNumber: number;
+  coverPhoto?: string;
+  galleryPhotos?: string[];
+  askingPriceNaira?: number;
+  description?: string;
+  isDemo?: boolean;
 }
 
 export type TenureType = 'Statutory' | 'Customary';

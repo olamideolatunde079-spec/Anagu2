@@ -112,7 +112,15 @@ export const INITIAL_PARCELS: Parcel[] = [
     encumbrances: [],
     ipfsDocumentHash: 'QmZtmD2qt8S991eZg9z48v9324hfkz924jfe949',
     certificateIssued: true,
-    blockNumber: 1849204
+    blockNumber: 1849204,
+    coverPhoto: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80',
+    galleryPhotos: [
+      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80'
+    ],
+    askingPriceNaira: 285000000,
+    description: 'Prime residential plot situated in the prestigious Lekki Phase 1 corridor, Lagos. Fully fenced with concrete perimeter wall, dry land topography, and direct paved access.',
+    isDemo: true
   },
   {
     id: 'pcl-002',
@@ -141,7 +149,15 @@ export const INITIAL_PARCELS: Parcel[] = [
     encumbrances: ['Statutory Setback 15m to Expressway Buffer'],
     ipfsDocumentHash: 'QmX927490fhekslks02941094hjfkslz99021',
     certificateIssued: true,
-    blockNumber: 1729104
+    blockNumber: 1729104,
+    coverPhoto: '/src/assets/images/trans_amadi_ph_commercial_plot_1795166439131.jpg',
+    galleryPhotos: [
+      'https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80'
+    ],
+    askingPriceNaira: 410000000,
+    description: 'Expansive industrial land corridor plot in Mowe, Ogun State. Ideal for manufacturing, warehousing, and logistics distribution hubs with heavy-duty arterial road access.',
+    isDemo: true
   },
   {
     id: 'pcl-003',
@@ -171,7 +187,14 @@ export const INITIAL_PARCELS: Parcel[] = [
     disputeNotes: 'Notice period active until March 28, 2026. 3 neighbor confirmations logged.',
     ipfsDocumentHash: 'QmY948100fhdkeal10820412hfksskd',
     certificateIssued: false,
-    blockNumber: 1861002
+    blockNumber: 1861002,
+    coverPhoto: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80',
+    galleryPhotos: [
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80'
+    ],
+    askingPriceNaira: 750000000,
+    description: 'Prime mixed-use plot in Maitama Extension, FCT Abuja. Panoramic hillside views, fully serviced upscale neighborhood with excellent arterial road connectivity.',
+    isDemo: true
   },
   {
     id: 'pcl-004',
@@ -200,7 +223,14 @@ export const INITIAL_PARCELS: Parcel[] = [
     encumbrances: [],
     ipfsDocumentHash: 'QmP934981fkdsakdl10294109401kfsd',
     certificateIssued: true,
-    blockNumber: 1492019
+    blockNumber: 1492019,
+    coverPhoto: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80',
+    galleryPhotos: [
+      'https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=800&q=80'
+    ],
+    askingPriceNaira: 180000000,
+    description: 'Large agricultural and agro-allied processing land in Chikun LGA, Kaduna State. Fertile terrain with reliable water table and immediate truck transport access.',
+    isDemo: true
   },
   {
     id: 'pcl-005',
@@ -230,7 +260,14 @@ export const INITIAL_PARCELS: Parcel[] = [
     disputeNotes: 'Acquired for Coastal Railway Right-of-Way. Compensation assessment published.',
     ipfsDocumentHash: 'QmDead0000000000000000000000000000000',
     certificateIssued: false,
-    blockNumber: 1859011
+    blockNumber: 1859011,
+    coverPhoto: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80',
+    galleryPhotos: [
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80'
+    ],
+    askingPriceNaira: 620000000,
+    description: 'Strategic commercial corridor plot along Ibeju-Lekki expressway. High-growth commercial investment zone near deep seaport and free trade zone.',
+    isDemo: true
   }
 ];
 

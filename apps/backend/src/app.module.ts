@@ -47,7 +47,7 @@ import { RateLimitGuard } from './common/guards/rate-limit.guard';
             ? { url: databaseUrl }
             : {
                 host: config.get<string>('POSTGRES_HOST', 'localhost'),
-                port: config.get<number>('POSTGRES_PORT', 5432),
+                port: config.get<number>('POSTGRES_PORT', 5433),
                 database: config.get<string>('POSTGRES_DB', 'anagu'),
                 username:
                   config.get<string>('DATABASE_APP_USER') ??

@@ -135,47 +135,62 @@ export const ExploreLandPage: React.FC = () => {
               return (
                 <div key={parcel.id}
                   onClick={() => setSelectedParcel(parcel)}
-                  className={`p-4 rounded-xl border cursor-pointer transition-all ${
+                  className={`rounded-xl border cursor-pointer transition-all overflow-hidden ${
                     isSelected
                       ? 'border-[#245C43] bg-white ring-2 ring-[#245C43]/20 shadow-xs'
                       : 'border-[#E5E8E5] bg-white hover:border-[#CBD0C8]'
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <div>
-                      <div className="text-sm font-bold text-[#252B28] font-mono">{parcel.titleNumber}</div>
-                      <div className="flex items-center gap-1.5 text-xs text-[#4A524D] mt-0.5 font-medium">
-                        <MapPin className="w-3.5 h-3.5 text-[#245C43]" />
-                        {parcel.district}, {parcel.lga}, {parcel.state}
+                  <div className="h-36 relative overflow-hidden bg-[#F7F8F7]">
+                    <img
+                      src={parcel.coverPhoto || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80'}
+                      alt={parcel.titleNumber}
+                      className="w-full h-full object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+                    <div className="absolute top-2 right-2 flex items-center gap-1">
+                      {parcel.isDemo && (
+                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-amber-500 text-white font-bold">DEMO</span>
+                      )}
+                      <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-[#245C43] text-white font-bold uppercase">{parcel.status}</span>
+                    </div>
+                  </div>
+
+                  <div className="p-4 space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <div className="text-sm font-bold text-[#252B28] font-mono">{parcel.titleNumber}</div>
+                        <div className="flex items-center gap-1.5 text-xs text-[#4A524D] mt-0.5 font-medium">
+                          <MapPin className="w-3.5 h-3.5 text-[#245C43]" />
+                          {parcel.district}, {parcel.lga}, {parcel.state}
+                        </div>
                       </div>
                     </div>
-                    <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#EBF4EF] text-[#164E35] border border-[#C4DFC9] uppercase">
-                      {parcel.status}
-                    </span>
-                  </div>
 
-                  <div className="flex items-center justify-between text-xs text-[#4A524D] mb-3 font-mono">
-                    <span className="font-medium">{parcel.sizeSqm.toLocaleString()} m² · {parcel.landUse}</span>
-                    <span className="font-bold text-[#252B28] text-sm">₦{(parcel.marketValuation / 1_000_000).toFixed(0)}M</span>
-                  </div>
+                    <div className="flex items-center justify-between text-xs text-[#4A524D] font-mono pt-1 border-t border-[#E5E8E5]">
+                      <span className="font-medium">{parcel.sizeSqm.toLocaleString()} m² · {parcel.landUse}</span>
+                      <span className="font-bold text-[#252B28] text-sm">₦{(parcel.askingPriceNaira || parcel.marketValuation || 150000000).toLocaleString()}</span>
+                    </div>
 
-                  <div className="flex gap-2 pt-2 border-t border-[#E5E8E5]">
-                    <Link to={`/portal/lands/${parcel.id}`}
-                      onClick={e => e.stopPropagation()}
-                      className="flex-1 py-2 rounded-lg bg-[#F7F8F7] text-[#252B28] text-xs font-semibold text-center hover:bg-[#E5E8E5] flex items-center justify-center gap-1.5 transition-colors">
-                      <Eye className="w-3.5 h-3.5" /> View Details
-                    </Link>
-                    {!isOwner && price && (
-                      <button onClick={e => { e.stopPropagation(); openBuy(parcel); }}
-                        className="flex-1 py-2 rounded-lg bg-[#245C43] text-white text-xs font-bold hover:bg-[#1B4733] flex items-center justify-center gap-1.5 transition-colors shadow-xs">
-                        <ShoppingCart className="w-3.5 h-3.5" /> Buy · {price} ETH
-                      </button>
-                    )}
-                    {isOwner && (
-                      <div className="flex-1 py-2 rounded-lg bg-[#EBF4EF] text-[#164E35] border border-[#C4DFC9] text-xs font-bold text-center">
-                        Your Parcel
-                      </div>
-                    )}
+                    <div className="flex gap-2 pt-1">
+                      <Link to={`/portal/lands/${parcel.id}`}
+                        onClick={e => e.stopPropagation()}
+                        className="flex-1 py-2 rounded-lg bg-[#F7F8F7] text-[#252B28] text-xs font-semibold text-center hover:bg-[#E5E8E5] flex items-center justify-center gap-1.5 transition-colors">
+                        <Eye className="w-3.5 h-3.5" /> View Details
+                      </Link>
+                      {!isOwner && price && (
+                        <button onClick={e => { e.stopPropagation(); openBuy(parcel); }}
+                          className="flex-1 py-2 rounded-lg bg-[#245C43] text-white text-xs font-bold hover:bg-[#1B4733] flex items-center justify-center gap-1.5 transition-colors shadow-xs">
+                          <ShoppingCart className="w-3.5 h-3.5" /> Buy · {price} ETH
+                        </button>
+                      )}
+                      {isOwner && (
+                        <div className="flex-1 py-2 rounded-lg bg-[#EBF4EF] text-[#164E35] border border-[#C4DFC9] text-xs font-bold text-center">
+                          Your Parcel
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               );

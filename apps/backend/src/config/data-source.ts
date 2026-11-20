@@ -18,7 +18,7 @@ export const AppDataSource = new DataSource({
     ? { url: databaseUrl }
     : {
         host:     process.env.POSTGRES_HOST ?? 'localhost',
-        port:     parseInt(process.env.POSTGRES_PORT ?? '5432', 10),
+        port:     parseInt(process.env.POSTGRES_PORT ?? '5433', 10),
         database: process.env.POSTGRES_DB   ?? 'anagu',
         username: process.env.DATABASE_APP_USER ?? process.env.POSTGRES_USER ?? 'anagu_admin',
         password: password ?? '',

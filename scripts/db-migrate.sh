@@ -34,24 +34,24 @@ fi
 
 run_psql_cmd() {
   local sql="$1"
-  if command -v docker >/dev/null 2>&1 && docker ps --format '{{.Names}}' 2>/dev/null | grep -qx 'anagu_postgres'; then
-    docker exec -i anagu_postgres psql -v ON_ERROR_STOP=1 -U "$DB_USER" -d "$DB_NAME" -tAc "$sql"
+  if command -v docker >/dev/null 2>&1 && docker ps --format '{{.Names}}' 2>/dev/null | grep -qx 'anagu_phase3_postgres'; then
+    docker exec -i anagu_phase3_postgres psql -v ON_ERROR_STOP=1 -U "$DB_USER" -d "$DB_NAME" -tAc "$sql"
   elif command -v psql >/dev/null 2>&1; then
     PGPASSWORD="$DB_PASSWORD" psql -v ON_ERROR_STOP=1 -h "$HOST" -p "$PORT" -U "$DB_USER" -d "$DB_NAME" -tAc "$sql"
   else
-    echo "ERROR: Neither running 'anagu_postgres' Docker container nor local 'psql' client is available." >&2
+    echo "ERROR: Neither running 'anagu_phase3_postgres' Docker container nor local 'psql' client is available." >&2
     exit 1
   fi
 }
 
 run_psql_file() {
   local file="$1"
-  if command -v docker >/dev/null 2>&1 && docker ps --format '{{.Names}}' 2>/dev/null | grep -qx 'anagu_postgres'; then
-    docker exec -i anagu_postgres psql -v ON_ERROR_STOP=1 -U "$DB_USER" -d "$DB_NAME" -f - < "$file"
+  if command -v docker >/dev/null 2>&1 && docker ps --format '{{.Names}}' 2>/dev/null | grep -qx 'anagu_phase3_postgres'; then
+    docker exec -i anagu_phase3_postgres psql -v ON_ERROR_STOP=1 -U "$DB_USER" -d "$DB_NAME" -f - < "$file"
   elif command -v psql >/dev/null 2>&1; then
     PGPASSWORD="$DB_PASSWORD" psql -v ON_ERROR_STOP=1 -h "$HOST" -p "$PORT" -U "$DB_USER" -d "$DB_NAME" -f "$file"
   else
-    echo "ERROR: Neither running 'anagu_postgres' Docker container nor local 'psql' client is available." >&2
+    echo "ERROR: Neither running 'anagu_phase3_postgres' Docker container nor local 'psql' client is available." >&2
     exit 1
   fi
 }
