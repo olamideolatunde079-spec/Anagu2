@@ -69,8 +69,3 @@ apps/anugu2/.gmp_cache/
 
 # Local project archives
 anugu2.zip
-
-# Temporary AI Studio files and local archives
-.aistudio/
-apps/anugu2/.gmp_cache/
-anugu2.zip
