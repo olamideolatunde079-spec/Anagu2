@@ -147,25 +147,54 @@ export const GISWorkspace: React.FC = () => {
     }
   };
 
-  // Calculate polygon perimeter and area
+  // Calculate approximate ground area and perimeter from WGS-84 coordinates.
   const calculateMetrics = () => {
-    if (drawnPoints.length < 3) return { areaSqm: 0, hectares: 0, perimeterM: 0 };
-
-    let area = 0;
-    let perimeter = 0;
-    for (let i = 0; i < drawnPoints.length; i++) {
-      const j = (i + 1) % drawnPoints.length;
-      area += drawnPoints[i].x * drawnPoints[j].y;
-      area -= drawnPoints[i].x * drawnPoints[j].y;
-
-      const dx = drawnPoints[j].x - drawnPoints[i].x;
-      const dy = drawnPoints[j].y - drawnPoints[i].y;
-      perimeter += Math.sqrt(dx * dx + dy * dy) * 2.8;
+    if (drawnPoints.length < 3) {
+      return { areaSqm: 0, hectares: 0, perimeterM: 0 };
     }
-    const areaSqm = Math.abs(area / 2) * 8.5;
+
+    const earthRadius = 6371008.8;
+    const toRadians = (degrees: number) => degrees * Math.PI / 180;
+
+    // Calculate distance between two geographic points using the Haversine formula.
+    const distanceBetween = (a: DrawnPoint, b: DrawnPoint) => {
+      const lat1 = toRadians(a.lat);
+      const lat2 = toRadians(b.lat);
+      const deltaLat = lat2 - lat1;
+      const deltaLng = toRadians(b.lng - a.lng);
+
+      const h =
+        Math.sin(deltaLat / 2) ** 2 +
+        Math.cos(lat1) * Math.cos(lat2) *
+        Math.sin(deltaLng / 2) ** 2;
+
+      return 2 * earthRadius * Math.asin(Math.sqrt(Math.min(1, h)));
+    };
+
+    // Calculate polygon area on a spherical Earth.
+    let areaTotal = 0;
+    let perimeter = 0;
+
+    for (let i = 0; i < drawnPoints.length; i++) {
+      const current = drawnPoints[i];
+      const next = drawnPoints[(i + 1) % drawnPoints.length];
+
+      const currentLat = toRadians(current.lat);
+      const nextLat = toRadians(next.lat);
+      const deltaLng = toRadians(next.lng - current.lng);
+
+      areaTotal += deltaLng * (
+        2 + Math.sin(currentLat) + Math.sin(nextLat)
+      );
+
+      perimeter += distanceBetween(current, next);
+    }
+
+    const areaSqm = Math.abs(areaTotal * earthRadius * earthRadius / 2);
+
     return {
       areaSqm: Math.round(areaSqm),
-      hectares: Number((areaSqm / 10000).toFixed(3)),
+      hectares: Number((areaSqm / 10000).toFixed(4)),
       perimeterM: Math.round(perimeter)
     };
   };
