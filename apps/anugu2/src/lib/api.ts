@@ -13,7 +13,7 @@
  * errors from crashing the app.
  */
 
-const API_BASE = (import.meta.env.VITE_API_URL ?? 'http://localhost:3001/api/v1')
+const API_BASE = (import.meta.env.VITE_API_URL ?? 'https://anagu2.onrender.com/api/v1')
   .replace(/\/+$/, '');
 
 function getToken(): string | null {
