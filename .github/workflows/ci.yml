@@ -1,0 +1,144 @@
+name: Anagu CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ── Job 1: Smart contracts ───────────────────────────────────────────────
+  contracts:
+    name: Smart Contracts (Hardhat)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: contracts/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: contracts
+
+      - name: Compile contracts
+        run: npx hardhat compile
+        working-directory: contracts
+
+      - name: Run contract tests (in-process Hardhat network)
+        run: npx hardhat test --network hardhat
+        working-directory: contracts
+
+  # ── Job 2: NestJS backend ────────────────────────────────────────────────
+  backend:
+    name: Backend (NestJS / Jest)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: apps/backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: apps/backend
+
+      - name: Lint
+        run: npm run lint
+        working-directory: apps/backend
+
+      - name: Run unit tests
+        run: npm test -- --runInBand --passWithNoTests
+        working-directory: apps/backend
+        env:
+          NODE_ENV: test
+          # Provide dummy env vars so ConfigService doesn't throw on startup
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: "5432"
+          POSTGRES_DB: anagu_test
+          POSTGRES_USER: anagu
+          POSTGRES_PASSWORD: anagu_secret
+          JWT_SECRET: ci-test-secret-key-not-for-production
+          BESU_RPC_URL: http://localhost:8545
+          DEPLOYER_PRIVATE_KEY: "8f2a55949038a9610f50fb23b5883af3b4ecb3c3bb792cbcefbd1542c692be63"
+          LAND_REGISTRY_ADDRESS: "0x0000000000000000000000000000000000000000"
+          LAND_TITLE_NFT_ADDRESS: "0x0000000000000000000000000000000000000000"
+          MQTT_URL: mqtt://localhost:1883
+          SUPABASE_URL: https://example.supabase.co
+          SUPABASE_SECRET_KEY: dummy-secret-key-for-ci
+          SUPABASE_JWKS_URL: https://example.supabase.co/auth/v1/.well-known/jwks.json
+
+  # ── Job 3: Next.js web app ───────────────────────────────────────────────
+  web:
+    name: Web (Next.js type-check + build)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: apps/web
+
+      - name: TypeScript type-check
+        run: npm run type-check
+        working-directory: apps/web
+        env:
+          # Stub vars required by supabase.ts on import
+          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_placeholder
+          NEXT_PUBLIC_API_URL: http://localhost:3001/api/v1
+          NEXT_PUBLIC_MQTT_URL: ws://localhost:8083/mqtt
+
+      - name: Next.js build
+        run: npm run build
+        working-directory: apps/web
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_placeholder
+          NEXT_PUBLIC_API_URL: http://localhost:3001/api/v1
+          NEXT_PUBLIC_MQTT_URL: ws://localhost:8083/mqtt
+
+  # ── Job 4: Expo mobile app ───────────────────────────────────────────────
+  mobile:
+    name: Mobile (Expo / TypeScript type-check)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: apps/mobile/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: apps/mobile
+
+      - name: TypeScript type-check
+        run: npx tsc --noEmit
+        working-directory: apps/mobile

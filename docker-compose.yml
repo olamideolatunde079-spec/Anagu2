@@ -1,0 +1,203 @@
+# ============================================================================
+# Anagu Land Administration Framework — Infrastructure Docker Compose (Dev)
+# Services: PostgreSQL 15 + PostGIS 3, Redis 7, MinIO (Private Buckets), EMQX
+# Blockchain Target: External EVM RPC (Polygon Amoy Testnet Chain ID 80002)
+#
+# Usage:
+#   cp .env.example .env   # populate required credentials
+#   docker compose up -d
+# ============================================================================
+
+networks:
+  # Isolated internal network — no outbound internet routing for data stores
+  anagu_internal:
+    name: anagu_internal
+    driver: bridge
+    internal: true
+  # Host-access bridge for local development tools (bound to 127.0.0.1)
+  anagu_edge:
+    name: anagu_edge
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+  emqx_data:
+  emqx_log:
+
+services:
+  # ── PostgreSQL 15 + PostGIS 3 (Primary Spatial & Relational DB) ───────────
+  postgres:
+    image: ${POSTGRES_IMAGE:-postgis/postgis:15-3.4}
+    container_name: anagu_phase3_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-anagu}
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER must be set in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      ANAGU_APPLY_DEV_SEED: ${ANAGU_APPLY_DEV_SEED:-false}
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
+      - ./infra/postgres/migrations:/migrations:ro
+      - ./infra/postgres/seeds:/seeds:ro
+    networks:
+      - anagu_internal
+      - anagu_edge
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\" && psql -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\" -tAc \"SELECT 1 FROM pg_extension WHERE extname='postgis'\" | grep -q 1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 25s
+
+  # ── Redis 7 (Session Cache, Rate Limiting & Job Queues) ───────────────────
+  redis:
+    image: ${REDIS_IMAGE:-redis:7-alpine}
+    container_name: anagu_phase3_redis
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?REDIS_PASSWORD must be set in .env}
+    command:
+      - /bin/sh
+      - -c
+      - exec redis-server /usr/local/etc/redis/redis.conf --requirepass "$${REDIS_PASSWORD}"
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+      - ./infra/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    networks:
+      - anagu_internal
+      - anagu_edge
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "REDISCLI_AUTH=\"$$REDIS_PASSWORD\" redis-cli ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ── MinIO (Private S3-Compatible Document Storage) ────────────────────────
+  minio:
+    image: ${MINIO_IMAGE:-minio/minio:RELEASE.2024-10-13T13-34-11Z}
+    container_name: anagu_minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?MINIO_ROOT_USER must be set in .env}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD must be set in .env}
+      MINIO_BROWSER: ${MINIO_BROWSER:-on}
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${MINIO_PORT:-9000}:9000"
+      - "${BIND_ADDRESS:-127.0.0.1}:${MINIO_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - anagu_internal
+      - anagu_edge
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:9000/minio/health/live || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+
+  # ── MinIO Private Bucket Initializer (Runs Once & Exits) ──────────────────
+  minio_init:
+    image: ${MINIO_MC_IMAGE:-minio/mc:RELEASE.2024-10-08T09-37-26Z}
+    container_name: anagu_minio_init
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      MINIO_INTERNAL_URL: http://minio:9000
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?MINIO_ROOT_USER must be set in .env}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD must be set in .env}
+      MINIO_BUCKET_DOCUMENTS: ${MINIO_BUCKET_DOCUMENTS:-land-documents}
+      MINIO_BUCKET_SURVEYS: ${MINIO_BUCKET_SURVEYS:-survey-plans}
+      MINIO_BUCKET_CERTIFICATES: ${MINIO_BUCKET_CERTIFICATES:-title-certificates}
+      MINIO_BUCKET_IDENTITY: ${MINIO_BUCKET_IDENTITY:-identity-documents}
+      MINIO_APP_USER: ${MINIO_APP_USER:-}
+      MINIO_APP_PASSWORD: ${MINIO_APP_PASSWORD:-}
+    volumes:
+      - ./infra/minio/init-buckets.sh:/init-buckets.sh:ro
+      - ./infra/minio/policies:/policies:ro
+    networks:
+      - anagu_internal
+    entrypoint: ["/bin/sh", "/init-buckets.sh"]
+
+  # ── EMQX MQTT Broker (Real-Time Messaging & Offline Sync) ─────────────────
+  mqtt:
+    image: ${EMQX_IMAGE:-emqx/emqx:5.6.0}
+    container_name: anagu_mqtt
+    restart: unless-stopped
+    environment:
+      EMQX_NAME: anagu
+      EMQX_HOST: mqtt
+      EMQX_NODE__COOKIE: ${EMQX_NODE_COOKIE:?EMQX_NODE_COOKIE must be set in .env}
+      EMQX_DASHBOARD__DEFAULT_USERNAME: ${EMQX_DASHBOARD_USER:-admin}
+      EMQX_DASHBOARD__DEFAULT_PASSWORD: ${EMQX_DASHBOARD_PASSWORD:?EMQX_DASHBOARD_PASSWORD must be set in .env}
+      EMQX_AUTHORIZATION__SOURCES__1__TYPE: file
+      EMQX_AUTHORIZATION__SOURCES__1__ENABLE: "true"
+      EMQX_AUTHORIZATION__SOURCES__1__PATH: /opt/emqx/etc/acl.conf
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${MQTT_PORT:-1883}:1883"
+      - "${BIND_ADDRESS:-127.0.0.1}:${MQTT_WS_PORT:-8083}:8083"
+      - "${BIND_ADDRESS:-127.0.0.1}:${MQTT_WSS_PORT:-8084}:8084"
+      - "${BIND_ADDRESS:-127.0.0.1}:${MQTT_TLS_PORT:-8883}:8883"
+      - "${BIND_ADDRESS:-127.0.0.1}:${EMQX_DASHBOARD_PORT:-18083}:18083"
+    volumes:
+      - emqx_data:/opt/emqx/data
+      - emqx_log:/opt/emqx/log
+      - ./infra/emqx/acl.conf:/opt/emqx/etc/acl.conf:ro
+    networks:
+      - anagu_internal
+      - anagu_edge
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test:
+        - CMD
+        - bash
+        - -ec
+        - |
+          exec 3<>/dev/tcp/127.0.0.1/18083
+          printf 'GET /status HTTP/1.0\r\nHost: localhost\r\n\r\n' >&3
+          IFS= read -r response <&3
+          [[ "$$response" == *"200 OK"* ]]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 25s
+
+  # ── Edge Reverse Proxy (Production Profile Only) ──────────────────────────
+  nginx:
+    build:
+      context: ./infra/nginx
+      dockerfile: Dockerfile
+    container_name: anagu_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      mqtt:
+        condition: service_healthy
+    networks:
+      - anagu_internal
+      - anagu_edge
+    profiles:
+      - production

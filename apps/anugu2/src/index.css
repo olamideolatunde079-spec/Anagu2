@@ -1,0 +1,138 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* ANAGU Professional Light Design Tokens */
+    --color-bg-base: #FFFFFF;
+    --color-bg-surface: #FFFFFF;
+    --color-bg-subtle: #F7F8F7;
+    --color-bg-card: #FFFFFF;
+    --color-border: #E5E8E5;
+    --color-border-hover: #CBD0C8;
+    --color-text-main: #252B28;
+    --color-text-muted: #4A524D;
+    --color-text-subtle: #545B56;
+    --color-primary: #245C43;
+    --color-primary-hover: #1B4733;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-bg-base);
+    color: var(--color-text-main);
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Universal focus outline for WCAG 2.2 AA accessibility */
+  *:focus-visible {
+    outline: 2px solid #245C43 !important;
+    outline-offset: 2px !important;
+  }
+}
+
+/* Solid white cards */
+.card,
+.card-navy,
+.glow-card {
+  background-color: #FFFFFF;
+  color: #252B28;
+  border: 1px solid #E5E8E5;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(37, 43, 40, 0.04);
+}
+
+.card:hover {
+  border-color: #245C43;
+}
+
+/* Input Fields */
+input::placeholder,
+textarea::placeholder {
+  color: #545B56;
+  opacity: 1;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #245C43;
+  box-shadow: 0 0 0 2px rgba(36, 92, 67, 0.15);
+  outline: none;
+}
+
+/* Primary and Secondary Action Buttons */
+.btn-primary {
+  background-color: #245C43;
+  color: #FFFFFF;
+  border-radius: 10px;
+  font-weight: 600;
+  min-height: 40px;
+  padding: 0.5rem 1rem;
+  transition: background-color 0.15s ease;
+}
+
+.btn-primary:hover {
+  background-color: #1B4733;
+}
+
+.btn-secondary {
+  background-color: #FFFFFF;
+  color: #252B28;
+  border: 1px solid #CBD0C8;
+  border-radius: 10px;
+  font-weight: 600;
+  min-height: 40px;
+  padding: 0.5rem 1rem;
+}
+
+.btn-secondary:hover {
+  background-color: #F7F8F7;
+  border-color: #245C43;
+}
+
+/* Status Badges with readable high-contrast text */
+.badge-success {
+  background-color: #EBF4EF;
+  color: #164E35;
+  border: 1px solid #C4DFC9;
+  font-weight: 600;
+}
+
+.badge-warning {
+  background-color: #FEF8E7;
+  color: #8A5800;
+  border: 1px solid #F8DE9E;
+  font-weight: 600;
+}
+
+.badge-danger {
+  background-color: #FDF2F2;
+  color: #991B1B;
+  border: 1px solid #F8B4B4;
+  font-weight: 600;
+}
+
+.badge-info {
+  background-color: #EFF6FF;
+  color: #1E40AF;
+  border: 1px solid #BFDBFE;
+  font-weight: 600;
+}
+
+.badge-neutral {
+  background-color: #F7F8F7;
+  color: #252B28;
+  border: 1px solid #E5E8E5;
+  font-weight: 600;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #FFFFFF; }
+::-webkit-scrollbar-thumb { background: #CBD0C8; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #4A524D; }

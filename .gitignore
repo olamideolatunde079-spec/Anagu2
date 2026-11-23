@@ -1,0 +1,71 @@
+# ── Environment / secrets ─────────────────────────────────────
+.env
+.env.local
+.env.*.local
+apps/backend/src/config/.env.backend
+*.pem
+*.key
+
+# ── Node ──────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# ── Build outputs ────────────────────────────────────────────
+dist/
+build/
+.next/
+out/
+.expo/
+*.tsbuildinfo
+
+# ── Hardhat / Foundry ────────────────────────────────────────
+contracts/artifacts/
+contracts/cache/
+contracts/typechain-types/
+contracts/deployments/
+!contracts/deployments/.gitkeep
+
+# ── Docker ───────────────────────────────────────────────────
+docker-compose.override.yml
+
+# ── Database ─────────────────────────────────────────────────
+*.sql.bak
+*.dump
+*.dump.sha256
+backups/
+pgdata/
+
+# ── Besu node data ───────────────────────────────────────────
+infra/besu/data/
+infra/besu/node-keys/*.priv
+
+# ── IDE ───────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ── Logs ─────────────────────────────────────────────────────
+logs/
+*.log
+
+# ── Testing ──────────────────────────────────────────────────
+coverage/
+.nyc_output/
+
+# ── MinIO local data ─────────────────────────────────────────
+minio_data/
+.vercel
+
+# Temporary AI Studio files and caches
+.aistudio/
+apps/anugu2/.gmp_cache/
+
+# Local project archives
+anugu2.zip

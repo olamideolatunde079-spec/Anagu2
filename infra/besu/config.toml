@@ -1,0 +1,39 @@
+# ============================================================
+# Hyperledger Besu configuration — Anagu QBFT permissioned network
+# Block period: 1 second | Epoch: 30,000 blocks
+# ============================================================
+
+# Network
+p2p-host="0.0.0.0"
+p2p-port=30303
+p2p-enabled=true
+
+# JSON-RPC HTTP
+rpc-http-enabled=true
+rpc-http-host="0.0.0.0"
+rpc-http-port=8545
+rpc-http-cors-origins=["*"]
+rpc-http-api=["ETH","NET","QBFT","WEB3","DEBUG","ADMIN","MINER","TXPOOL"]
+
+# JSON-RPC WebSocket
+rpc-ws-enabled=true
+rpc-ws-host="0.0.0.0"
+rpc-ws-port=8546
+rpc-ws-api=["ETH","NET","QBFT","WEB3","DEBUG"]
+
+# Host allowlist (restrict in production)
+host-allowlist=["*"]
+
+# Mining (block production)
+miner-enabled=true
+miner-coinbase="0xFE3B557E8Fb62b89F4916B721be55cEb828dBd73"
+
+# Gas
+min-gas-price=0
+tx-pool-price-bump=0
+
+# Logging
+logging="INFO"
+
+# Sync
+sync-mode="FULL"

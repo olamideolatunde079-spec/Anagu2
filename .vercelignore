@@ -1,0 +1,11 @@
+# Vercel: only build apps/anugu2 — ignore everything else
+apps/backend
+apps/web
+apps/mobile
+contracts
+infra
+PROJECT.md
+Makefile
+docker-compose.yml
+*.zip
+*.pdf

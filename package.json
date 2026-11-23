@@ -1,0 +1,43 @@
+{
+  "name": "anagu",
+  "version": "1.0.0",
+  "description": "Anagu Land Administration Framework — monorepo root",
+  "private": true,
+  "workspaces": [
+    "apps/anugu2",
+    "apps/backend",
+    "apps/web",
+    "contracts"
+  ],
+  "dependencies": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "scripts": {
+    "dev": "node ./scripts/start-web.cjs",
+    "install:all": "npm install --workspaces --if-present",
+    "backend": "npm run start:dev --workspace=apps/backend",
+    "web": "node ./scripts/start-web.cjs",
+    "db:init": "bash ./scripts/apply-db-schema.sh",
+    "db:migrate": "bash ./scripts/db-migrate.sh up",
+    "db:rollback": "bash ./scripts/db-migrate.sh down",
+    "db:status": "bash ./scripts/db-migrate.sh status",
+    "db:seed": "bash ./scripts/db-migrate.sh seed",
+    "db:backup": "bash ./scripts/db-backup.sh",
+    "infra:verify": "bash ./scripts/verify-infra.sh",
+    "build": "npm run build --workspace=apps/backend && npm --prefix apps/anugu2 run build",
+    "build:next": "npm run build --workspace=apps/web",
+    "test": "npm run test --workspace=apps/backend --workspace=contracts",
+    "test:backend": "npm run test --workspace=apps/backend",
+    "test:contracts": "npm run test --workspace=contracts",
+    "deploy:local": "npm run deploy:local --workspace=contracts",
+    "seed:local": "npm run seed:local --workspace=contracts",
+    "lint": "npm --prefix apps/anugu2 run lint",
+    "lint:ui": "npm --prefix apps/anugu2 run lint",
+    "ev": "npm run test --workspace=apps/backend -- --testPathPattern=evaluation --verbose --runInBand",
+    "component4": "npm run test --workspace=apps/backend -- --testPathPattern=evaluation --verbose --runInBand",
+    "fraud": "npm run test --workspace=apps/backend -- --testPathPattern=fraud-scenarios --verbose --runInBand",
+    "latency": "npm run test --workspace=apps/backend -- --testPathPattern=latency-benchmark --verbose --runInBand",
+    "storage": "npm run test --workspace=apps/backend -- --testPathPattern=storage-overhead --verbose --runInBand"
+  }
+}

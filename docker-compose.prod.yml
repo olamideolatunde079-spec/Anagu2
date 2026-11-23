@@ -1,0 +1,41 @@
+# ============================================================================
+# Anagu Land Administration Framework — Production Compose Override
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml --profile production up -d
+#
+# Security Hardening Applied:
+#   - Removes direct host port exposure for PostgreSQL, Redis, MinIO & EMQX UI
+#   - Isolates data stores strictly to the internal Docker network
+#   - Disables development seed fixtures
+#   - Requires scoped MinIO backend service credentials
+# ============================================================================
+
+services:
+  postgres:
+    environment:
+      ANAGU_APPLY_DEV_SEED: "false"
+    ports: !reset []
+    networks: !override
+      - anagu_internal
+
+  redis:
+    ports: !reset []
+    networks: !override
+      - anagu_internal
+
+  minio:
+    environment:
+      MINIO_BROWSER: "off"
+    ports: !reset []
+    networks: !override
+      - anagu_internal
+
+  minio_init:
+    environment:
+      MINIO_APP_USER: ${MINIO_APP_USER:?MINIO_APP_USER must be set in production}
+      MINIO_APP_PASSWORD: ${MINIO_APP_PASSWORD:?MINIO_APP_PASSWORD must be set in production}
+
+  mqtt:
+    ports: !reset []
+    networks: !override
+      - anagu_internal

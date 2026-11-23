@@ -1,0 +1,48 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetBucketLocation",
+        "s3:ListBucket",
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::land-documents",
+        "arn:aws:s3:::land-documents/*",
+        "arn:aws:s3:::survey-plans",
+        "arn:aws:s3:::survey-plans/*",
+        "arn:aws:s3:::title-certificates",
+        "arn:aws:s3:::title-certificates/*",
+        "arn:aws:s3:::identity-documents",
+        "arn:aws:s3:::identity-documents/*",
+        "arn:aws:s3:::land-photos",
+        "arn:aws:s3:::land-photos/*"
+      ]
+    },
+    {
+      "Effect": "Deny",
+      "Action": [
+        "s3:PutBucketPolicy",
+        "s3:DeleteBucketPolicy",
+        "s3:PutBucketAcl",
+        "s3:PutObjectAcl"
+      ],
+      "Resource": [
+        "arn:aws:s3:::land-documents",
+        "arn:aws:s3:::land-documents/*",
+        "arn:aws:s3:::survey-plans",
+        "arn:aws:s3:::survey-plans/*",
+        "arn:aws:s3:::title-certificates",
+        "arn:aws:s3:::title-certificates/*",
+        "arn:aws:s3:::identity-documents",
+        "arn:aws:s3:::identity-documents/*",
+        "arn:aws:s3:::land-photos",
+        "arn:aws:s3:::land-photos/*"
+      ]
+    }
+  ]
+}
