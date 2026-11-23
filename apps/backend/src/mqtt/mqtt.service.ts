@@ -35,6 +35,7 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(MqttService.name);
   private client!: mqtt.MqttClient;
   private connected = false;
+  private mqttEnabled = false;
 
   constructor(
     @InjectRepository(MqttEvent)
@@ -44,7 +45,14 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
 
   // ── Lifecycle ──────────────────────────────────────────────────────────
   onModuleInit() {
-    const url = this.config.get<string>('MQTT_URL', 'mqtt://localhost:1883');
+    const url = this.config.get<string>('MQTT_URL');
+
+if (!url) {
+  this.logger.warn('MQTT_URL not configured — MQTT disabled');
+  return;
+}
+
+this.mqttEnabled = true;
 
     this.client = mqtt.connect(url, {
       clientId:        `anagu-backend-${process.pid}`,
@@ -83,7 +91,7 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
     topic: string,
     payload: Record<string, unknown>,
     qos: 0 | 1 | 2 = 1,
-  ): Promise<void> {
+  ): Promise<void>{ 
     const fullPayload = { ...payload, timestamp: Date.now() };
     const message     = JSON.stringify(fullPayload);
     const byteSize    = Buffer.byteLength(message, 'utf8');
@@ -98,6 +106,10 @@ export class MqttService implements OnModuleInit, OnModuleDestroy {
     });
     const saved = await this.eventRepo.save(eventRecord);
 
+    if (!this.mqttEnabled || !this.client) {
+      this.logger.warn(`MQTT disabled — event saved but not published: ${topic}`);
+      return;
+}
     return new Promise((resolve, reject) => {
       this.client.publish(topic, message, { qos, retain: false }, async (err) => {
         if (err) {
